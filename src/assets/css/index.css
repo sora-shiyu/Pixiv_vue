@@ -1,0 +1,34 @@
+@import url("./base.css");
+
+::-webkit-scrollbar {
+    width: 3px;
+    height:3px;
+    /* 滚动条宽度， width：对应竖滚动条的宽度  height：对应横滚动条的高度*/
+    background: rgba(255, 255, 255, 1);
+}
+
+/*定义滚动条轨道（凹槽）样式*/
+::-webkit-scrollbar-track {
+    border-radius: 1px;
+    /* -webkit-box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.1); */
+    background-color: rgb(255, 255, 255);
+}
+
+/*定义滑块 样式*/
+::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    height: 100px;
+    /* 滚动条滑块长度 */
+    background-color: rgb(255, 255, 255);
+}
+* {
+    -webkit-touch-callout: none; /*系统默认菜单被禁用*/
+    -webkit-user-select: none; /*webkit浏览器*/
+    -khtml-user-select: none; /*早期浏览器*/
+    -moz-user-select: none; /*火狐*/
+    -ms-user-select: none; /*IE10*/
+    user-select: none;
+}
+hr{
+    margin-top: 50px;
+}

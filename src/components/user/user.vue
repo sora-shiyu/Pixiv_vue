@@ -40,8 +40,8 @@ export default {
     },
     methods: {
       click_tag(e){
-        this.$store.state.searchText=e
-        this.$router.push("/search");
+         this.$store.commit('setSearchText', e);
+        this.$router.push("/searchResults");
       },
       GMTToStr(time) {
       let date = new Date(time);

@@ -16,7 +16,7 @@
         </div>
       </div>
     </div>
-    <div @click="isCollect = !isCollect" class="collect">
+    <div v-if="info" @click="isCollect = !isCollect" class="collect">
       <img v-if="isCollect" src="@/assets/img/collect_.svg" alt="" />
       <img v-else src="@/assets/img/collect.svg" alt="" />
     </div>

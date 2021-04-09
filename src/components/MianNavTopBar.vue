@@ -21,7 +21,10 @@
       </template>
     </TabBarBox>
     <div class="searchBar">
-      <div :class="searchBarText == '输入关键词' ? 'searchBarBorder' : ''">
+      <div
+        @click="click"
+        :class="searchBarText == '输入关键词' ? 'searchBarBorder' : ''"
+      >
         {{ searchBarText }}
       </div>
     </div>
@@ -36,7 +39,7 @@
         <div>主页</div>
       </template>
     </TabBarBox>
-    <TabBarBox path="/new">
+    <TabBarBox path="/rank">
       <template #item-icon>
         <img class="tab-bar-img" src="../assets/img/more_.svg" alt="" />
       </template>
@@ -44,7 +47,7 @@
         <img class="tab-bar-img" src="../assets/img/more.svg" alt="" />
       </template>
       <template #item-text>
-        <div>最新</div>
+        <div>排行榜</div>
       </template>
     </TabBarBox>
     <TabBarBox path="/search">
@@ -66,7 +69,7 @@ import NavigationBar from "../components/tabbar/NavigationBar";
 import TabBarBox from "../components/tabbar/BarBox";
 const dictionary = {
   home: "主页",
-  new: "最新",
+  rank: "排行榜",
   search: "输入关键词",
 };
 export default {
@@ -81,9 +84,7 @@ export default {
       searchBarText: "",
     };
   },
-  watch: {
-
-  },
+  watch: {},
   mounted() {},
   created() {
     for (let a in dictionary) {
@@ -95,7 +96,20 @@ export default {
       }
     }
   },
-  methods: {},
+  methods: {
+    click() {
+      if (this.searchBarText == "输入关键词") {
+        this.$store.commit('setSearchText', "");
+        this.$router.push({
+          name: "searchResults",
+          params: { 
+            searchTag: true,
+            from:'TopBar'
+            },
+        });
+      }
+    },
+  },
   computed: {
     // isActive(){
     //   return this.$route.path.indexOf(this.path)!== -1

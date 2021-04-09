@@ -17,6 +17,7 @@ const routes: Array<RouteRecordRaw> = [
     path:'/search/',
     redirect: '/search/illust'
   },
+  //home
   {
     path: '/home',
     name: 'home',
@@ -40,30 +41,7 @@ const routes: Array<RouteRecordRaw> = [
       }, 
     ]
   },
-  {
-    path: '/new',
-    name: 'new',
-
-    component: () => import( '../views/New/New.vue'),
-    children:[
-      {
-        path:'/new/',
-        component: () => import("../views/New/idol.vue"),
-      },
-      {
-        path:'/new/idol',
-        component: () => import("../views/New/idol.vue"),
-      }, 
-      {
-        path:'/new/image',
-        component: () => import("../views/New/image.vue"),
-      },
-      {
-        path:'/new/friend',
-        component: () => import("../views/New/friend.vue"),
-      }, 
-    ]
-  },
+  //search
   {
     path: '/search',
     name: 'search',
@@ -94,6 +72,26 @@ const routes: Array<RouteRecordRaw> = [
     name: 'users',
     component: () => import( '../views/User/Users.vue') 
   },
+  {
+    path: '/artworks/:id',
+    name: 'artworks',
+    component: () => import( '../views/Artworks/artworks.vue')
+  },
+  {
+    path: '/searchResults',
+    name: 'searchResults',
+    component: () => import( '../views/Search/searchResults.vue') 
+  },
+  {
+    path: '/rank',
+    name: 'rank',
+    component: () => import( '../views/Rank/Rank.vue') 
+  },
+  // {
+  //   path: '/searchTag',
+  //   name: 'searchTag',
+  //   component: () => import( '../views/Search/searchTag.vue') 
+  // },
 ]
 
 const router = createRouter({

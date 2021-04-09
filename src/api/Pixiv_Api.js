@@ -16,8 +16,8 @@ export function Get_pixiv_rank_test(type, mode, page, no_page,date="") {
             break;
         case "search":
             //搜索
-            //url_="/Pixiv_api/search?word="+mode+page_
-            url_ = "https://hibiapi.getloli.com/api/pixiv/?type=search&word=" + mode + page_
+            url_="/Pixiv_api/search?word="+mode+page_
+            // url_ = "https://hibiapi.getloli.com/api/pixiv/?type=search&word=" + mode + page_
             break;
         case "member_illust":
             //画师画作

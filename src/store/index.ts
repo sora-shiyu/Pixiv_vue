@@ -3,9 +3,8 @@ import { createStore } from 'vuex'
 export default createStore({
   state: {
     screenWidth: 0,
-    rollingY: {
-
-    },
+    rollingY: {},
+    searchText:"",
 
   },
   
@@ -15,6 +14,9 @@ export default createStore({
     },
     setScreenWidth(state, n) {
       state.screenWidth = n
+    },
+    setSearchText(state, n) {
+      state.searchText = n
     },
   },
   actions: {

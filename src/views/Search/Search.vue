@@ -4,8 +4,8 @@
       <NavigationBar />
       <PageNavigation :datas="datas" />
     </el-affix>
-    <div style="text-align: center;" v-if="tagsData">
-      <div class="zero">
+    <div style="text-align: center" v-if="tagsData">
+      <div @click="clickTag(tagsData[0].tag)" class="zero">
         <img :src="getProxyUrl(tagsData[0].illust.image_urls.medium)" alt="" />
         <div class="text">
           <div style="font-size: 24px">
@@ -21,6 +21,7 @@
           v-for="(data, index) in tagsData.slice(1, tagsData.length)"
           :key="index"
           class="nozero"
+          @click="clickTag(data.tag)"
         >
           <img :src="getProxyUrl(data.illust.image_urls.medium)" alt="" />
           <div class="text">
@@ -39,23 +40,20 @@
 
 
 
-<script lang="ts">
+<script >
 import NavigationBar from "@/components/MianNavTopBar.vue";
 import PageNavigation from "@/components/PageNav/PageNavigation.vue";
-import { defineComponent, ref } from "vue";
-import { Get_pixiv_rank_test} from "@/api/Pixiv_Api";
-export default defineComponent({
+import { Get_pixiv_rank_test } from "@/api/Pixiv_Api";
+export default {
   name: "Search",
   components: {
     NavigationBar,
     PageNavigation,
   },
-  setup() {
-    interface data {
-      name: String;
-      path: String;
-    }
-    let datas: Array<data> = [
+  data() {
+    return {
+      tagsData: undefined,
+      datas: [
       {
         name: "插画·漫画",
         path: "/search/illust",
@@ -68,33 +66,29 @@ export default defineComponent({
         name: "用户",
         path: "/search/user",
       },
-    ];
-    // console.log(datas);
-
-    return {
-      datas,
-    };
-  },
-  data() {
-    return {
-      tagsData: undefined,
+    ],
     };
   },
   mounted() {
     console.log("mounted");
   },
   methods: {
-    getProxyUrl(a: String): String {
-      let url: String = a.replace("i.pximg.net", "i.pixiv.cat");
+    clickTag(e) {
+      this.$store.commit("setSearchText", e);
+      this.$router.push("/searchResults");
+            
+    },
+    getProxyUrl(a) {
+      let url = a.replace("i.pximg.net", "i.pixiv.cat");
       return url;
     },
   },
   created() {
-    Get_pixiv_rank_test("tags").then((res: any) => {
+    Get_pixiv_rank_test("tags").then((res) => {
       this.tagsData = res.trend_tags;
     });
   },
-});
+};
 </script>
 
 <style  scoped>
@@ -122,10 +116,10 @@ export default defineComponent({
   filter: brightness(60%);
 }
 .text {
-    position: absolute;
-    top: 65%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: #fff;
+  position: absolute;
+  top: 65%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
 }
 </style>

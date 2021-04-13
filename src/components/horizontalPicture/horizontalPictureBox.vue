@@ -6,21 +6,30 @@
     </div>
 
     <div v-if="info" class="info">
-      <div class="title">{{ data.title }}</div>
+      <div v-if="live" class="title">{{ data.name }}</div>
+      <div v-else class="title">{{ data.title }}</div>
       <div class="userName">
         <div @click="imgClick">
           <div>
             <img :src="getuserurl" alt="" />
           </div>
-          <div style="line-height: 20px">{{ data.user.name }}</div>
+          <div v-if="live" style="line-height: 20px">
+            ✿{{ data.member_count }} 👁{{ data.total_audience_count }}
+          </div>
+          <div v-else style="line-height: 20px">{{ data.user.name }}</div>
         </div>
       </div>
     </div>
-    <div v-if="info" @click="isCollect = !isCollect" class="collect">
-      <img v-if="isCollect" src="@/assets/img/collect_.svg" alt="" />
-      <img v-else src="@/assets/img/collect.svg" alt="" />
+    <div v-if="info" @click="isCollect = !isCollect" :class="!live?'collect':'collect_live'">
+      <div v-if="!live">
+        <img v-if="isCollect" src="@/assets/img/collect_.svg" alt="" />
+        <img v-else src="@/assets/img/collect.svg" alt="" />
+      </div>
+      <div class="round" v-else>
+        <img  src="@/assets/img/live.svg" alt="" />
+      </div>
     </div>
-    <div v-if="data.page_count != 1" class="pageinfo">
+    <div v-if="data.page_count != 1 && data.page_count" class="pageinfo">
       <img src="@/assets/img/page.png" />
       <div class="pageText">{{ data.page_count }}</div>
     </div>
@@ -31,6 +40,7 @@
 export default {
   name: "horizontalPictureBox",
   props: {
+    live: Boolean,
     height: String,
     width: String,
     data: Object,
@@ -82,15 +92,27 @@ export default {
     },
     geturl() {
       if (this.data != undefined) {
-        let url = this.data.image_urls.medium;
-        // return ""
-        return url.replace("i.pximg.net", "i.pixiv.cat");
+        if (this.live) {
+          let url = this.data.thumbnail_image_url;
+          return url.replace(
+            "img-sketch.pximg.net",
+            "img-sketch.shiyua.workers.dev"
+          );
+        } else {
+          let url = this.data.image_urls.medium;
+          return url.replace("i.pximg.net", "i.pixiv.cat");
+        }
       }
       return "";
     },
     getuserurl() {
       if (this.data != undefined) {
-        let url = this.data.user.profile_image_urls.medium;
+        let url = "";
+        if (this.live) {
+          url = this.data.owner.user.profile_image_urls.medium;
+        } else {
+          url = this.data.user.profile_image_urls.medium;
+        }
         return url.replace("i.pximg.net", "i.pixiv.cat");
       }
       return "";
@@ -162,6 +184,7 @@ export default {
   float: left;
   position: relative;
 }
+
 .bigimg {
   height: 100%;
   width: 100%;
@@ -194,6 +217,8 @@ export default {
   margin-left: 10px;
   height: 20px;
   margin-top: 20px;
+  overflow: hidden;
+  line-height: 20px;
 }
 .userName {
   margin-left: 10px;
@@ -215,7 +240,32 @@ export default {
   width: 24px !important;
   margin-right: 10px;
 }
-.collect img {
+.collect_live{
+    position: absolute;
+    right: 0px;
+    width: 40px !important;
+    top: 10px;
+    height: 40px;
+}
+.collect_live img{
   width: 100%;
+}
+.collect  img {
+  width: 100%;
+}
+.round{
+    width: 70%;
+    height: 70%;
+    background-color: rgba(144, 133, 133, 0.81);
+    border-radius: 100%;
+    border-style: solid;
+    border-color: rgba(189, 184, 184, 0.54);
+    border-width: 2px;
+}
+.round img{
+  width: 60%;
+    margin: auto;
+    display: block;
+    height: 100%;
 }
 </style>

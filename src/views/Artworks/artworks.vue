@@ -40,37 +40,39 @@
     <!-- 作者详情 -->
     <userinfo :imgdata="imgdata" />
     <!-- 上拉容器 -->
-    <el-drawer
-      @open="open"
-      :with-header="false"
-      :show-close="false"
-      v-model="drawer"
-      :direction="'btt'"
-      destroy-on-close
-      size="60%"
-    >
-      <div class="userAffix">
-        <img
-          :style="{ display: affix ? '' : 'none' }"
-          @click="drawer = !drawer"
-          src="@/assets/img/down.svg"
-        />
-        <div>
-          <div class="userImg" @click="click_user">
-            <el-avatar :src="userimg" icon="el-icon-user-solid"></el-avatar>
-          </div>
-          <div style="line-height: 25px">
-            <div class="darkGray">
-              {{ imgdata.title }}
+    <div id="drawer1">
+      <el-drawer
+        @open="open_"
+        :with-header="false"
+        :show-close="false"
+        v-model="drawer"
+        :direction="'btt'"
+        destroy-on-close
+        size="60%"
+      >
+        <div class="userAffix">
+          <img
+            :style="{ display: affix ? '' : 'none' }"
+            @click="drawer = !drawer"
+            src="@/assets/img/down.svg"
+          />
+          <div>
+            <div class="userImg" @click="click_user">
+              <el-avatar :src="userimg" icon="el-icon-user-solid"></el-avatar>
             </div>
-            <div class="gray">
-              {{ name }}
+            <div style="line-height: 25px">
+              <div class="darkGray">
+                {{ imgdata.title }}
+              </div>
+              <div class="gray">
+                {{ name }}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <userinfo :imgdata="imgdata" />
-    </el-drawer>
+        <userinfo :imgdata="imgdata" />
+      </el-drawer>
+    </div>
 
     <hr />
     <!-- 前3张图 -->
@@ -97,7 +99,9 @@
       </div>
     </div>
     <hr style="margin-top: 0px" />
-    <div style="text-align: center;">相关作品</div>
+    <comments :id="id"/>
+    <hr style="margin-top: 10px;"/>
+    <div style="text-align: center">相关作品</div>
     <!-- 相关作品 -->
     <waterfall
       type="related"
@@ -111,9 +115,10 @@
 <script>
 import waterfall from "@/components/waterfall/waterfall";
 import navInfo from "@/components/navInfo";
-import { Get_pixiv_rank_test } from "@/api/Pixiv_Api";
+import { Get_pixiv_api } from "@/api/Pixiv_Api";
 import userinfo from "@/components/user/user";
 import topBack from "@/components/top_back";
+import comments from "@/components/comments/comments";
 export default {
   name: "artworks",
   components: {
@@ -121,6 +126,7 @@ export default {
     userinfo,
     navInfo,
     waterfall,
+    comments,
   },
   props: {
     _id: String,
@@ -140,19 +146,20 @@ export default {
   computed: {},
   mounted() {},
   created() {
-    this.domWidth = window.screen.width;
+    // this.domWidth = window.screen.width;
+    this.domWidth = document.body.clientWidth;
     if (this._id == undefined) {
       let path = this.$route.path;
       this.id = path.substring(path.lastIndexOf("/") + 1);
     }
-    Get_pixiv_rank_test("illust", this.id, 0, false).then((res) => {
+    Get_pixiv_api("illust", this.id, 0, false).then((res) => {
       this.imgdata = res.illust;
       this.name = res.illust.user.name;
       this.userimg = this.imgdata.user.profile_image_urls.medium.replace(
         "i.pximg.net",
         "i.pixiv.cat"
       );
-      Get_pixiv_rank_test("member_illust", res.illust.user.id, 1, false).then(
+      Get_pixiv_api("member_illust", res.illust.user.id, 1, false).then(
         (res) => {
           this.otherImg = res.illusts.slice(0, 3);
         }
@@ -178,6 +185,8 @@ export default {
       let domdrawer = document.getElementById("drawer1").firstElementChild
         .firstElementChild;
       domdrawer.style.overflow = "auto";
+      domdrawer.style.maxWidth = "500px";
+      domdrawer.style.margin = "0 auto";
     },
     scroll_(e) {
       this.affix = e.fixed;
@@ -219,6 +228,8 @@ export default {
   height: 50px;
   float: left;
   border-radius: 50%;
+  width: 50px;
+  object-fit: cover;
 }
 .name {
   margin-left: 10px;
@@ -237,14 +248,18 @@ export default {
 .otherImg div {
   /* float: left;    导致抽屉容器变形  */
   display: inline-block;
-  width: 33.3vw;
-  height: 33vw;
+  width: 33.3%;
+  height: 0;
+  position: relative;
+  padding-bottom: 33.3%;
+  overflow: hidden;
 }
 .otherImg img {
-  width: 100%;
-  height: 100%;
   object-fit: cover;
+  width: 100%;
   border-radius: 8px;
+  position: absolute;
+  height: 100%;
 }
 .outerLayer {
   position: relative;

@@ -9,7 +9,7 @@
   >
     <div :style="{ width: getwidth }" class="Picwrap">
       <div class="Pics" v-for="(data, index) in imgDatas" :key="index">
-        <horizontalPictureBox :width="width" :height="height" :data="data" />
+        <horizontalPictureBox :live="live" :width="width" :height="height" :data="data" />
       </div>
     </div>
   </div>
@@ -20,6 +20,7 @@ import horizontalPictureBox from "@/components/horizontalPicture/horizontalPictu
 export default {
   name: "horizontalPicture",
   props: {
+    live:Boolean,
     width: String,
     height: String,
     imgDatas: Object,

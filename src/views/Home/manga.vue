@@ -16,23 +16,25 @@
       </template>
     </navInfo>
   </div>
+    <waterfall type="recommended" mode="manga	" path="/home/manga" :waterfall="true" />
 </template>
 
 <script>
-import { Get_pixiv_rank_test } from "@/api/Pixiv_Api";
+import { Get_pixiv_api } from "@/api/Pixiv_Api";
 import navInfo from "@/components/navInfo";
 import horizontalPicture from "@/components/horizontalPicture/horizontalPicture";
-
+import waterfall from "@/components/waterfall/waterfall";
 export default {
   name: "manga",
   components: {
     navInfo,
     horizontalPicture,
+    waterfall,
   },
   created() {
-    Get_pixiv_rank_test("rank", "week", 1, false).then((res) => {
+    Get_pixiv_api("recommended", "manga", 1, false).then((res) => {
       console.log(res);
-      this.rankData = res.illusts.slice(0, 9);
+      this.rankData = res.ranking_illusts;
     });
   },
   data() {

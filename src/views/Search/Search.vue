@@ -43,7 +43,7 @@
 <script >
 import NavigationBar from "@/components/MianNavTopBar.vue";
 import PageNavigation from "@/components/PageNav/PageNavigation.vue";
-import { Get_pixiv_rank_test } from "@/api/Pixiv_Api";
+import { Get_pixiv_api } from "@/api/Pixiv_Api";
 export default {
   name: "Search",
   components: {
@@ -84,7 +84,7 @@ export default {
     },
   },
   created() {
-    Get_pixiv_rank_test("tags").then((res) => {
+    Get_pixiv_api("tags","illust").then((res) => {
       this.tagsData = res.trend_tags;
     });
   },
@@ -106,12 +106,14 @@ export default {
 .nozero {
   width: 33.3%;
   height: 33.3vw;
+  max-height: 166px;
   float: left;
   position: relative;
 }
 .nozero img {
   width: 100%;
   height: 100%;
+  
   object-fit: cover;
   filter: brightness(60%);
 }

@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { Get_pixiv_rank_test } from "@/api/Pixiv_Api";
+import { Get_pixiv_api } from "@/api/Pixiv_Api";
 import waterfallBox from "@/components/waterfall/waterfallBox";
 export default {
   name: "waterfall",
@@ -52,7 +52,7 @@ export default {
   },
   created() {
     console.log(this.type, this.mode);
-    Get_pixiv_rank_test(this.type, this.mode, this.page, false).then((res) => {
+    Get_pixiv_api(this.type, this.mode, this.page, false).then((res) => {
       console.log(res);
       res.illusts.forEach((element) => {
         this.Datas.push(element);
@@ -82,7 +82,7 @@ export default {
       if (this.loading != true) {
         this.loading = true;
         this.page++;
-        Get_pixiv_rank_test(this.type, this.mode, this.page, false).then(
+        Get_pixiv_api(this.type, this.mode, this.page, false).then(
           (res) => {
             // console.log(res.illusts);
             res.illusts.forEach((element) => {

@@ -32,3 +32,7 @@
 hr{
     margin-top: 50px;
 }
+body{
+    max-width: 500px;
+    margin: 0 auto;
+}

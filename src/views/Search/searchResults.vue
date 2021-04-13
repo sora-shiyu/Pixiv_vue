@@ -1,28 +1,27 @@
 <template>
   <div>
     <div v-if="isTag">
-          <el-affix position="top" :offset="0">
-      <searchBar :clickSearchDiv="clickSearchDiv" :isTag="isTag">
-        
-        <template #tags>
-          <el-tag
-            class="Tags"
-            :key="tag"
-            v-for="tag in searchTagArr"
-            closable
-            :disable-transitions="false"
-            @close="handleClose(tag)"
-            effect="dark"
-          >
-            {{ tag }}
-          </el-tag>
-        </template>
-      </searchBar>
+      <el-affix position="top" :offset="0">
+        <searchBar :clickSearchDiv="clickSearchDiv" :isTag="isTag">
+          <template #tags>
+            <el-tag
+              class="Tags"
+              :key="tag"
+              v-for="tag in searchTagArr"
+              closable
+              :disable-transitions="false"
+              @close="handleClose(tag)"
+              effect="dark"
+            >
+              {{ tag }}
+            </el-tag>
+          </template>
+        </searchBar>
       </el-affix>
       <waterfall
         v-if="searchText"
         type="search"
-        :mode="searchText+' users入り'"
+        :mode="searchText + ' users入り'"
         path="/searchResults"
         :waterfall="true"
       />
@@ -34,7 +33,8 @@
             ref="input"
             class="searchBarTextinput"
             v-model="searchText"
-            @keyup.enter="search()"
+            @keyup.enter="search"
+            @input="autoTags"
             type="text"
             placeholder="输入关键字"
           />
@@ -46,12 +46,21 @@
         :datas="datas"
       />
     </div>
+    <div v-if="tagsArr && !isTag">
+      <div style="line-height: 60px" class="TagWrap">你是不是要找?</div>
+      <div @click="tagsclick(autotag.name)" class="TagWrap" v-for="autotag in tagsArr" :key="autotag">
+        <div :style="{lineHeight:autotag.translated_name?'30px':'60px' }" class="Tag1">{{autotag.name}}</div>
+        <div v-if="autotag.translated_name" class="Tag2">{{autotag.translated_name}}</div>
+      </div>
+    </div>
   </div>
 </template>
 <script>
 import PageNavigation from "@/components/PageNav/PageNavigation.vue";
 import searchBar from "@/components/tabbar/searchBar.vue";
 import waterfall from "@/components/waterfall/waterfall";
+import { debounce } from "@/utils/tool";
+import { Get_pixiv_api } from "@/api/Pixiv_Api";
 export default {
   name: "searchResults",
   components: {
@@ -68,9 +77,10 @@ export default {
       }
     },
   },
+
   data() {
     return {
-      searchText: undefined,
+      searchText: "",
       searchTagArr: [],
       isTag: true,
       datas: [
@@ -88,12 +98,22 @@ export default {
         },
       ],
       Selected: 1,
+      tagsArr: [],
     };
   },
   mounted() {},
   methods: {
+    autoTags: debounce(function () {
+      Get_pixiv_api("autocomplete", this.searchText).then((e) => {
+        this.tagsArr = e.tags;
+      });
+    }, 1000),
     ispPushClick(e) {
       this.Selected = e;
+    },
+    tagsclick(e){
+      this.searchText=e
+      this.search()
     },
     handleClose(e) {
       this.searchTagArr.splice(this.searchTagArr.indexOf(e), 1);
@@ -172,5 +192,23 @@ export default {
   background: rgb(245, 245, 245);
   outline: 0;
   border-style: hidden;
+}
+.TagWrap{
+  height: 60px;
+    line-height: 30px;
+    border-bottom-style: solid;
+    padding-left: 10px;
+    border-bottom-width: 1px;
+    border-color: rgb(245,245,245,.8);
+}
+.Tag1{
+height: 20px;
+    padding-top: 5px;
+    font-size: 18px;
+    font-weight: 600;
+}
+.Tag2{
+  font-size: 15px;
+    color: rgb(205, 198, 202);
 }
 </style>

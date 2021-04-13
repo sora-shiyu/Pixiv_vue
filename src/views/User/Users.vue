@@ -34,8 +34,10 @@
       <img src="@/assets/img/down.svg" alt="" />
     </div>
     <!-- navInfo -->
-
-      <navInfo pushSrc="/home" text="其他画作">
+    <navInfo  text="插画·漫画收藏">
+    </navInfo>
+    <horizontalPicture v-if="favoriteData"  width="200px" height="200px" :imgDatas="favoriteData" />
+    <navInfo pushSrc="/home" text="其他画作">
       <template #img>
         <img src="@/assets/img/collect.svg" />
       </template>
@@ -60,10 +62,12 @@
 import topback from "@/components/top_back";
 import navInfo from "@/components/navInfo";
 import waterfall from "@/components/waterfall/waterfall";
-import { Get_pixiv_rank_test } from "@/api/Pixiv_Api";
+import { Get_pixiv_api } from "@/api/Pixiv_Api";
+import horizontalPicture from "@/components/horizontalPicture/horizontalPicture";
 export default {
   name: "users",
   components: {
+    horizontalPicture,
     topback,
     navInfo,
     waterfall,
@@ -81,7 +85,8 @@ export default {
       userWebpage: "", //skeb链接
       userTwitter: "", //Twitter链接
       textH: 0,
-      userIllusts:0//插画数量
+      userIllusts:0,//插画数量
+      favoriteData:null
 
     };
   },
@@ -97,7 +102,7 @@ export default {
   created() {
     console.log(this.$store.state.refresh);
     this.userid = this.$route.params.id;
-    Get_pixiv_rank_test("member", this.userid, 0, false).then((res) => {
+    Get_pixiv_api("member", this.userid, 0, false).then((res) => {
       this.userdata = res;
       this.userUrl = res.user.profile_image_urls.medium.replace(
         "i.pximg.net",
@@ -115,6 +120,13 @@ export default {
         this.textH = this.$refs.CommentText.offsetHeight;
       }, 200);
     });
+     Get_pixiv_api("favorite", this.userid).then((res) => {
+       console.log(res);
+       if(res.illusts.length!=0){
+         this.favoriteData=res.illusts
+       }
+
+     })
   },
   mounted() {
     //使用nextTick为了保证dom元素都已经渲染完毕

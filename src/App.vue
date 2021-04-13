@@ -1,5 +1,5 @@
 <template>
-  <div class="App">
+  <div ref="App" class="App">
     <router-view v-slot="{ Component }">
       <!-- :key="$route.fullPath" -->
       <keep-alive :key="$route.fullPath"  include="Home" >

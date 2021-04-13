@@ -39,6 +39,6 @@ export default {
   /* position: absolute; */
   position: fixed;
   top: 0;
-  max-width: 600px;
+  max-width: 500px;
 }
 </style>

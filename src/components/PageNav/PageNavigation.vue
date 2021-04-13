@@ -53,7 +53,9 @@ export default {
       } else {
         this.flag = path;
         this.$emit("ispPushClick", path);
-        let w=window.screen.width/5
+        // let w=window.screen.width/5
+        
+        let w=document.body.clientWidth/5
         this.$refs.rank.scrollLeft=w*(index-2)
         console.log(this.$refs.rank.scrollLeft);
       }

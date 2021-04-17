@@ -1,6 +1,6 @@
 import { Pixiv_request } from './request'
 
-export function Get_pixiv_api(type, mode, page, no_page, date = "") {
+export function Get_pixiv_api (type, mode, page, no_page, date = "") {
     let url_
     let page_
     no_page ? page_ = "" : page_ = "&page=" + page
@@ -12,6 +12,11 @@ export function Get_pixiv_api(type, mode, page, no_page, date = "") {
         case "search":
             //搜索
             url_ = "/Pixiv_api/search?popular_preview=true&word=" + mode + page_
+            // url_ = "https://hibiapi.getloli.com/api/pixiv/?type=search&word=" + mode + page_
+            break;
+        case "search_user":
+            //搜索
+            url_ = "/Pixiv_api/search_user?word=" + mode + page_
             // url_ = "https://hibiapi.getloli.com/api/pixiv/?type=search&word=" + mode + page_
             break;
         case "member_illust":

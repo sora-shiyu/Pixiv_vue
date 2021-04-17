@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-loading.fullscreen.lock="loading">
     <navInfo pushSrc="/rank" text="排行榜">
       <template #img>
         <img src="@/assets/img/rank.svg" />
@@ -20,12 +20,7 @@
       </template>
     </navInfo>
     <!-- 横向组件 -->
-    <horizontalPicture
-      :live="true"
-      width="200px"
-      height="100px"
-      :imgDatas="liveData"
-    />
+    <horizontalPicture :live="true" width="200px" height="100px" :imgDatas="liveData" />
     <navInfo text="为你推荐">
       <template #img>
         <img src="@/assets/img/collect_.svg" />
@@ -51,7 +46,7 @@
       v-loading="loading"
       element-loading-text="拼命加载中"
       element-loading-spinner="el-icon-loading"
-    ></div> -->
+    ></div>-->
   </div>
 </template>
 
@@ -68,24 +63,27 @@ export default {
     horizontalPicture,
     waterfall,
   },
-  created() {
+  created () {
+    console.log(this.$store);
     // console.log(liveJson[0]);
     Get_pixiv_api("rank", "day", 1, false).then((res) => {
       console.log(res);
       this.rankData = res.illusts.slice(0, 9);
+      this.loading = false
     });
     Get_pixiv_api("live").then((res) => {
       console.log(res);
       this.liveData = res.lives;
     });
   },
-  data() {
+  data () {
     return {
       rankData: [],
       liveData: [],
+      loading: true,
     };
   },
-  mounted() {},
+  mounted () { },
   methods: {},
 };
 </script>

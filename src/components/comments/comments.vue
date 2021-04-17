@@ -79,6 +79,7 @@ export default {
   color: rgb(80, 78, 78);
   height: 20px;
   font-size: 14px;
+  height: auto;
 }
 .date {
   margin-left: 50px;

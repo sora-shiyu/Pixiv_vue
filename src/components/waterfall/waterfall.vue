@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-loading="loadingFirst">
     <div
       style="overflow: hidden"
       v-infinite-scroll="load"
@@ -15,6 +15,7 @@
       <div class="package" v-for="(Data, index) in Datas" :key="index">
         <waterfallBox :path="path" :data="Data" />
       </div>
+      <el-empty v-if="Datas.length==0" description="抱歉,无法找到搜索结果"  :image-size="300"></el-empty>
       <!-- </div> -->
     </div>
     <div
@@ -45,6 +46,7 @@ export default {
       Datas: [],
       page: 1,
       loading: false,
+      loadingFirst:true
     };
   },
   mounted() {
@@ -57,7 +59,7 @@ export default {
       res.illusts.forEach((element) => {
         this.Datas.push(element);
       });
-
+      this.loadingFirst=false
       this.loading = false;
     });
   },

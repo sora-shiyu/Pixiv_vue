@@ -1,10 +1,14 @@
 <template>
-  <div>
+  <div v-loading="loading">
     <topBack />
     <!-- 原图 -->
     <div class="container" :style="{ width: domWidth + 'px' }">
       <div v-for="indedx in imgdata.page_count" :key="indedx">
-        <el-image :src="getsrc_(indedx - 1)"></el-image>
+        <!-- <el-image data-action="zoom" :src="getsrc_(indedx - 1)"></el-image> -->
+        <img
+          v-zoom="{ src: getOriginalSrc_(indedx - 1) }"
+          :src="getsrc_(indedx - 1)"
+        />
       </div>
     </div>
     <!-- 作者信息 -->
@@ -99,8 +103,8 @@
       </div>
     </div>
     <hr style="margin-top: 0px" />
-    <comments :id="id"/>
-    <hr style="margin-top: 10px;"/>
+    <comments :id="id" />
+    <hr style="margin-top: 10px" />
     <div style="text-align: center">相关作品</div>
     <!-- 相关作品 -->
     <waterfall
@@ -119,6 +123,7 @@ import { Get_pixiv_api } from "@/api/Pixiv_Api";
 import userinfo from "@/components/user/user";
 import topBack from "@/components/top_back";
 import comments from "@/components/comments/comments";
+
 export default {
   name: "artworks",
   components: {
@@ -131,6 +136,84 @@ export default {
   props: {
     _id: String,
   },
+  directives: {
+    zoom: {
+      // 指令的定义
+      mounted(el, binding) {
+        // console.log(el, binding);
+
+        let flag = false;
+        let src = null;
+        if ("src" in binding.value) {
+          src = binding.value.src;
+        }
+        let oldsrc = el.src;
+        el.addEventListener("click", () => {
+          flag = !flag;
+          if (flag) {
+            let clientHeight = document.body.clientHeight;
+            let offsetY = 0;
+            let zoom = 1;
+            let top = el.getBoundingClientRect().top;
+
+            if (el.height > clientHeight) {
+              zoom = clientHeight / el.height;
+            }
+            offsetY = (clientHeight - el.height) / 2 - top;
+            if (src) {
+              el.src = src;
+            }
+            el.style.position = "relative";
+            el.style.zIndex = "999";
+            el.style.transition =
+              "-webkit-transform 0.3s cubic-bezier(0.4, 0, 0, 1) 0s";
+            el.style.transform =
+              "translate(0px, " +
+              offsetY +
+              "px) scale(" +
+              zoom +
+              ", " +
+              zoom +
+              ")";
+
+            let div = document.createElement("div");
+            div.className = "mask";
+            div.id = "mask";
+            div.onclick = function () {
+              el.click();
+            };
+            div.style =
+              "width: 100%;height: 100%;position: fixed;inset: 0px;opacity: 1;z-index: 998;background-color: rgb(255, 255, 255);transition: opacity 0.3s cubic-bezier(0.4, 0, 0, 1) 0s;";
+            document.body.insertBefore(div, document.body.firstChild);
+
+            function isReize() {
+              let newtop = el.getBoundingClientRect().top;
+              if (top !== newtop) {
+                console.log(top, newtop);
+                // alert("滚动了");
+                el.click();
+              }
+            }
+            setTimeout(() => {
+              if (flag) {
+                top = el.getBoundingClientRect().top;
+                el.__vueSetInterval__ = setInterval(isReize, 100);
+              }
+            }, 450);
+          } else {
+            clearInterval(el.__vueSetInterval__);
+            document.getElementById("mask").style.display = "none";
+            el.style.transform = "none";
+            el.src = oldsrc;
+            setTimeout(() => {
+              el.style = "";
+              document.getElementById("mask").remove();
+            }, 400);
+          }
+        });
+      },
+    },
+  },
   data() {
     return {
       id: 0,
@@ -141,13 +224,14 @@ export default {
       domWidth: 0,
       name: "",
       otherImg: [],
+      loading: true,
     };
   },
   computed: {},
   mounted() {},
   created() {
     // this.domWidth = window.screen.width;
-    this.domWidth = document.body.clientWidth;
+    this.domWidth = this.$store.state.screenWidth;
     if (this._id == undefined) {
       let path = this.$route.path;
       this.id = path.substring(path.lastIndexOf("/") + 1);
@@ -161,6 +245,7 @@ export default {
       );
       Get_pixiv_api("member_illust", res.illust.user.id, 1, false).then(
         (res) => {
+          this.loading = false;
           this.otherImg = res.illusts.slice(0, 3);
         }
       );
@@ -175,6 +260,14 @@ export default {
         this.imgdata.page_count == 1
           ? this.imgdata.image_urls.large
           : this.imgdata.meta_pages[index].image_urls.large;
+      //   console.log(url_.replace("i.pximg.net", "i.pixiv.cat"));
+      return url_.replace("i.pximg.net", "i.pixiv.cat");
+    },
+    getOriginalSrc_(index) {
+      let url_ =
+        this.imgdata.page_count == 1
+          ? this.imgdata.meta_single_page.original_image_url
+          : this.imgdata.meta_pages[index].image_urls.original;
       //   console.log(url_.replace("i.pximg.net", "i.pixiv.cat"));
       return url_.replace("i.pximg.net", "i.pixiv.cat");
     },
@@ -196,7 +289,7 @@ export default {
 </script>
 
 <style scoped>
-.container {
+.container * {
   width: 100%;
   /* margin: 10px 0; */
 }

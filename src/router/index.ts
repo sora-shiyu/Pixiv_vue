@@ -13,10 +13,10 @@ const routes: Array<RouteRecordRaw> = [
     path: '/home/',
     redirect: '/home/illust'
   },
-  {
-    path:'/search/',
-    redirect: '/search/illust'
-  },
+  // {
+  //   path:'/search/',
+  //   redirect: '/search/illust'
+  // },
   //home
   {
     path: '/home',
@@ -46,21 +46,21 @@ const routes: Array<RouteRecordRaw> = [
     path: '/search',
     name: 'search',
     component: () => import( '../views/Search/Search.vue'),
-    children:[
+    // children:[
 
-      {
-        path:'/search/illust',
-        component: () => import("../views/Search/illust.vue"),
-      }, 
-      {
-        path:'/search/novel',
-        component: () => import("../views/Search/novel.vue"),
-      },
-      {
-        path:'/search/user',
-        component: () => import("../views/Search/user.vue"),
-      }, 
-    ]
+    //   {
+    //     path:'/search/illust',
+    //     component: () => import("../views/Search/illust.vue"),
+    //   }, 
+    //   {
+    //     path:'/search/novel',
+    //     component: () => import("../views/Search/novel.vue"),
+    //   },
+    //   {
+    //     path:'/search/user',
+    //     component: () => import("../views/Search/user.vue"),
+    //   }, 
+    // ]
   },
   {
     path: '/artworks/:id',

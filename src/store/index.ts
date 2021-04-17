@@ -5,6 +5,7 @@ export default createStore({
     screenWidth: 0,
     rollingY: {},
     searchText:"",
+    searchMode:undefined
 
   },
   
@@ -17,6 +18,9 @@ export default createStore({
     },
     setSearchText(state, n) {
       state.searchText = n
+    },
+    setSearchMode(state, n) {
+      state.searchMode = n
     },
   },
   actions: {

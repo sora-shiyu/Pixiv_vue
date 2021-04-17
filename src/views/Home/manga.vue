@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-loading.fullscreen.lock="loading">
     <navInfo pushSrc="/rank" text="排行榜">
       <template #img>
         <img src="@/assets/img/rank.svg" />
@@ -35,11 +35,13 @@ export default {
     Get_pixiv_api("recommended", "manga", 1, false).then((res) => {
       console.log(res);
       this.rankData = res.ranking_illusts;
+      this.loading=false
     });
   },
   data() {
     return {
       rankData: [],
+      loading:true
     };
   },
   mounted() {},

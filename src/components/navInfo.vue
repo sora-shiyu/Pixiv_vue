@@ -9,9 +9,8 @@
       </div>
       <img @click="next_" v-if="pushSrc!=null" src="@/assets/img/next.svg" style="float: right" />
       <div style="float: right">
-       <slot name="text"></slot>
+        <slot name="text"></slot>
       </div>
-
     </div>
   </div>
 </template>
@@ -24,13 +23,13 @@ export default {
     text: String,
     pushSrc: String,
   },
-  data() {
+  data () {
     return {};
   },
-  mounted() {},
+  mounted () { },
   methods: {
-    next_(){
-      
+    next_ () {
+
       this.$router.push(this.pushSrc);
     },
   },
@@ -49,10 +48,11 @@ export default {
 .box span {
   font-size: 20px;
 }
-.leftImg img{
-    height: 30px;
+.leftImg img {
+  height: 30px;
 }
 .box img {
-  height: 30px;
+  height: 24px;
+  margin-top: 3px;
 }
 </style>

@@ -26,11 +26,8 @@ export default {
   },
   created() {
     // console.log(this.data);
-    if (this.$store.state.screenWidth == 0) {
-      this.$store.commit("setScreenWidth", document.body.clientWidth);
-    }
     this.BoxWidth = (this.$store.state.screenWidth - 20) / 2;
-    console.log(this.screenWidth);
+    // console.log(this.screenWidth);
   },
   methods: {
     click(){

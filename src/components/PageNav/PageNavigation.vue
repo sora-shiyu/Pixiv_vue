@@ -16,9 +16,7 @@
                 : 'isActive1'
               : ''
           "
-        >
-          {{ data.name }}
-        </div>
+        >{{ data.name }}</div>
       </div>
     </div>
   </div>
@@ -35,38 +33,52 @@ export default {
       type: Boolean,
       default: true,
     },
+    choose: {
+      type: String,
+      default: null,
+    },
   },
-  data() {
+  data () {
     return {
       flag: "",
     };
   },
-  mounted() {
-    this.flag = this.datas[0].path;
+  mounted () {
+    // if(choose)
+    this.flag = this.choose ? this.choose : this.datas[0].path;
+
   },
-  computed: {},
+  created () {
+
+    console.log(this.$store.state.searchMode);
+    this.flag = this.$store.state.searchMode
+  },
+  computed: {
+
+  },
   methods: {
-    itemclick(path,index) {
+    itemclick (path, index) {
       //console.log(path);
       if (this.ispush) {
-        this.$router.replace(path).catch((err) => {});
+        this.$router.replace(path).catch((err) => { });
       } else {
         this.flag = path;
         this.$emit("ispPushClick", path);
         // let w=window.screen.width/5
-        
-        let w=document.body.clientWidth/5
-        this.$refs.rank.scrollLeft=w*(index-2)
-        console.log(this.$refs.rank.scrollLeft);
+
+        let w = this.$store.state.screenWidth / 5
+        this.$refs.rank.scrollLeft = w * (index - 2)
+        // console.log(this.$refs.rank.scrollLeft);
       }
     },
-    isActive(path) {
+    isActive (path) {
       if (this.ispush) {
         return this.$route.path == path;
       } else {
         return this.flag == path;
       }
     },
+
   },
 };
 </script>
@@ -79,7 +91,7 @@ export default {
   display: flex;
 }
 .container2 {
-   height: 40px;
+  height: 40px;
   background: #fff;
   box-shadow: 0px 4px 4px 0px rgba(100, 100, 100, 0.29);
   width: 140%;

@@ -36,3 +36,6 @@ body{
     max-width: 500px;
     margin: 0 auto;
 }
+.el-loading-mask{
+    background-color: rgba(255, 255, 255, 0.911) !important
+}

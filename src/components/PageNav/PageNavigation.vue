@@ -87,13 +87,16 @@ export default {
 .container {
   height: 40px;
   background: #fff;
-  box-shadow: 0px 4px 4px 0px rgba(100, 100, 100, 0.29);
+  /* box-shadow: 0px 4px 4px 0px rgba(100, 100, 100, 0.29); */
+  box-shadow: 1px 4px 3px 1px rgb(100 100 100 / 29%);
+
   display: flex;
 }
 .container2 {
   height: 40px;
   background: #fff;
-  box-shadow: 0px 4px 4px 0px rgba(100, 100, 100, 0.29);
+  box-shadow: 1px 4px 3px 1px rgb(100 100 100 / 29%);
+
   width: 140%;
 }
 .container .title {

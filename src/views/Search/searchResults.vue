@@ -44,12 +44,14 @@
           </div>
           <div>
             <div>{{userdata.user.name}}</div>
-            <div>关注</div>
+            <div>
+              <el-button size="mini">关注</el-button>
+            </div>
           </div>
           <div>
             <img
               @click="gotoUser(userdata.user.id)"
-              :src="getProxyUrl(userdata.user.profile_image_urls.medium)"
+              :src="$store.getters.getProxyUrl(userdata.user.profile_image_urls.medium)"
             />
           </div>
         </div>
@@ -101,9 +103,11 @@
           :key="userData"
           @click="gotoUser(userData.user.id)"
         >
-          <img :src="getProxyUrl(userData.user.profile_image_urls.medium)" />
+          <img :src="$store.getters.getProxyUrl(userData.user.profile_image_urls.medium)" />
           <div>{{userData.user.name}}</div>
-          <div>关注</div>
+          <div>
+            <el-button size="mini">关注</el-button>
+          </div>
         </div>
       </div>
     </div>
@@ -168,7 +172,7 @@ export default {
   methods: {
     autoTags: debounce(function () {
       if (this.Selected == 'user') {
-        Get_pixiv_api("search_user", this.searchText).then((e) => {
+        Get_pixiv_api("search_user", this.searchText, 1).then((e) => {
           this.tagsArr = e.user_previews;
         });
       } else {
@@ -180,10 +184,6 @@ export default {
 
 
     }, 1000),
-    getProxyUrl (a) {
-      let url = a.replace("i.pximg.net", "i.pixiv.cat");
-      return url;
-    },
     gotoUser (id) {
       this.$router.push("/users/" + id);
     },
@@ -351,7 +351,7 @@ export default {
   height: 40px;
   line-height: 40px;
 }
-.userPreview > div:nth-child(2) :first-child {
+.userPreview > div:nth-child(2) > :first-child {
   float: left;
   padding-left: 80px;
 }

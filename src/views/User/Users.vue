@@ -2,41 +2,30 @@
   <div>
     <topback />
     <div class="topImage">
-      <img :src="userUrl" alt="" />
+      <img :src="userUrl" alt />
     </div>
     <div style="position: relative">
       <div class="userData">
-        <img class="userimg" :src="userUrl" alt="" />
+        <img class="userimg" :src="userUrl" alt />
         <div class="userName">{{ userName }}</div>
-        <div v-if="userTwitter != null" class="textColor">
-          <img
-            style="width: 20px"
-            src="@/assets/img/twitter.svg"
-          />
-          <span>{{ userTwitter }}</span>
+        <div v-if="userTwitter != null" style="display: inline-flex;" class="textColor">
+          <img style="width: 20px" src="@/assets/img/twitter.svg" />
+          <div style="line-height: 28px;">{{ userTwitter }}</div>
         </div>
-        <div class="textColor">
-          {{ userFollow + "关注  " + userMyPixiv + "好P友" }}
-        </div>
+        <div class="textColor">{{ userFollow + "关注 " + userMyPixiv + "好P友" }}</div>
       </div>
     </div>
 
     <div id="userComment" class="Comment">
       <div ref="CommentText">{{ userComment }}</div>
     </div>
-    <div
-      v-if="CB_"
-      @click="clickCB"
-      :style="{ display: cb_falg ? 'none' : '' }"
-      class="Commentbut"
-    >
+    <div v-if="CB_" @click="clickCB" :style="{ display: cb_falg ? 'none' : '' }" class="Commentbut">
       <div>查看更多</div>
-      <img src="@/assets/img/down.svg" alt="" />
+      <img src="@/assets/img/down.svg" alt />
     </div>
     <!-- navInfo -->
-    <navInfo  text="插画·漫画收藏">
-    </navInfo>
-    <horizontalPicture v-if="favoriteData"  width="200px" height="200px" :imgDatas="favoriteData" />
+    <navInfo text="插画·漫画收藏"></navInfo>
+    <horizontalPicture v-if="favoriteData" width="200px" height="200px" :imgDatas="favoriteData" />
     <navInfo pushSrc="/home" text="其他画作">
       <template #img>
         <img src="@/assets/img/collect.svg" />
@@ -46,10 +35,10 @@
       </template>
     </navInfo>
 
-
     <!-- 瀑布流图片 -->
 
-          <waterfall v-if="userid!=0"
+    <waterfall
+      v-if="userid!=0"
       type="member_illust"
       :mode="userid"
       :path="'/users/' + userid"
@@ -72,7 +61,7 @@ export default {
     navInfo,
     waterfall,
   },
-  data() {
+  data () {
     return {
       cb_falg: false,
       userid: 0,
@@ -85,8 +74,8 @@ export default {
       userWebpage: "", //skeb链接
       userTwitter: "", //Twitter链接
       textH: 0,
-      userIllusts:0,//插画数量
-      favoriteData:null
+      userIllusts: 0,//插画数量
+      favoriteData: null
 
     };
   },
@@ -99,36 +88,33 @@ export default {
       return flag;
     },
   },
-  created() {
+  created () {
     console.log(this.$store.state.refresh);
     this.userid = this.$route.params.id;
     Get_pixiv_api("member", this.userid, 0, false).then((res) => {
       this.userdata = res;
-      this.userUrl = res.user.profile_image_urls.medium.replace(
-        "i.pximg.net",
-        "i.pixiv.cat"
-      );
+      this.userUrl = this.$store.getters.getProxyUrl(res.user.profile_image_urls.medium)
       this.userFollow = res.profile.total_follow_users;
       this.userMyPixiv = res.profile.total_mypixiv_users;
       this.userName = res.user.name;
       this.userComment = res.user.comment;
       this.userWebpage = res.profile.webpage;
       this.userTwitter = res.profile.twitter_url;
-      this.userIllusts=res.profile.total_illusts
+      this.userIllusts = res.profile.total_illusts
       console.log(this.userdata);
       setTimeout(() => {
         this.textH = this.$refs.CommentText.offsetHeight;
       }, 200);
     });
-     Get_pixiv_api("favorite", this.userid).then((res) => {
-       console.log(res);
-       if(res.illusts.length!=0){
-         this.favoriteData=res.illusts
-       }
+    Get_pixiv_api("favorite", this.userid).then((res) => {
+      console.log(res);
+      if (res.illusts.length != 0) {
+        this.favoriteData = res.illusts
+      }
 
-     })
+    })
   },
-  mounted() {
+  mounted () {
     //使用nextTick为了保证dom元素都已经渲染完毕
     // let textH=this.$refs.CommentText.offsetHeight
     // setTimeout(()=>{
@@ -139,7 +125,7 @@ export default {
     // });
   },
   methods: {
-    clickCB() {
+    clickCB () {
       document.getElementById("userComment").style.overflow = "unset";
       document.getElementById("userComment").style.height = "auto";
       this.cb_falg = true;
@@ -197,7 +183,7 @@ export default {
   height: 180px;
   font-size: 20px;
   font-weight: 600;
-  margin-top: 140px;
+  margin-top: 170px;
   color: black;
   overflow: auto;
   word-wrap: break-word;

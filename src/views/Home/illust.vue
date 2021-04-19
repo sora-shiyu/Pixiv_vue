@@ -1,5 +1,5 @@
 <template>
-  <div v-loading.fullscreen.lock="loading">
+  <div v-loading="loading">
     <navInfo pushSrc="/rank" text="排行榜">
       <template #img>
         <img src="@/assets/img/rank.svg" />

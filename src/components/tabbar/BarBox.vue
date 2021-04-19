@@ -9,8 +9,8 @@
 </template>
 
 <script>
-import {defineComponent} from 'vue';
-export default defineComponent ({
+import { defineComponent } from 'vue';
+export default defineComponent({
   name: "TabBarBox",
   props: {
     path: String,
@@ -23,31 +23,31 @@ export default defineComponent ({
       default: false,
     },
   },
-  data() {
+  data () {
     return {
       // isActive:false
     };
   },
-  mounted() {},
+  mounted () { },
   computed: {
-    isActive() {
+    isActive () {
       // console.log(this.$route.path);
       // console.log(this.path);
       return this.$route.path.indexOf(this.path) !== -1;
     },
-    activeStyle() {
-      return this.isActive ? { color: this.activeColor } : {color: "rgb(154,213,253)" };
+    activeStyle () {
+      return this.isActive ? { color: this.activeColor } : { color: "rgb(154,213,253)" };
     },
   },
   methods: {
-    itemclick() {
+    itemclick () {
       // console.log(this.setting);
       if (this.setting == false) {
         //  this.$store.commit('ActivePage', this.path)
-        this.$router.replace(this.path).catch((err) => {});
+        this.$router.replace(this.path).catch((err) => { });
       } else {
-        // this.$store.commit("设置页状态", true);
-        console.log("打开侧边栏");
+        this.$store.commit("setSettingStatus", !this.$store.state.SettingStatus);
+
       }
     },
   },
@@ -61,5 +61,4 @@ export default defineComponent ({
   height: 49px;
   font-size: 14px;
 }
-
 </style>

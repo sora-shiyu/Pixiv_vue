@@ -1,8 +1,8 @@
 <template>
   <div ref="image" :style="{ height: height, width: width }" class="container">
     <div class="bigimg" @click="imgClick">
-      <img v-if="!visual" src="@/assets/img/..svg" alt="" />
-      <img v-else :src="geturl" alt="" />
+      <img v-if="!visual" src="@/assets/img/..svg" alt />
+      <img v-else :src="geturl" alt />
     </div>
 
     <div v-if="info" class="info">
@@ -11,22 +11,23 @@
       <div class="userName">
         <div @click="imgClick">
           <div>
-            <img :src="getuserurl" alt="" />
+            <img :src="getuserurl" alt />
           </div>
-          <div v-if="live" style="line-height: 20px">
-            ✿{{ data.member_count }} 👁{{ data.total_audience_count }}
-          </div>
+          <div
+            v-if="live"
+            style="line-height: 20px"
+          >✿{{ data.member_count }} 👁{{ data.total_audience_count }}</div>
           <div v-else style="line-height: 20px">{{ data.user.name }}</div>
         </div>
       </div>
     </div>
     <div v-if="info" @click="isCollect = !isCollect" :class="!live?'collect':'collect_live'">
       <div v-if="!live">
-        <img v-if="isCollect" src="@/assets/img/collect_.svg" alt="" />
-        <img v-else src="@/assets/img/collect.svg" alt="" />
+        <img v-if="isCollect" src="@/assets/img/collect_.svg" alt />
+        <img v-else src="@/assets/img/collect.svg" alt />
       </div>
       <div class="round" v-else>
-        <img  src="@/assets/img/live.svg" alt="" />
+        <img src="@/assets/img/live.svg" alt />
       </div>
     </div>
     <div v-if="data.page_count != 1 && data.page_count" class="pageinfo">
@@ -50,8 +51,8 @@ export default {
     },
     path: String,
   },
-  created() {},
-  data() {
+  created () { },
+  data () {
     return {
       title: "",
       userUrl: "",
@@ -86,11 +87,11 @@ export default {
     },
   },
   computed: {
-    f1() {
+    f1 () {
       // console.log(this.$store.state.rollingY[this.path]);
       return this.$store.state.rollingY[this.path];
     },
-    geturl() {
+    geturl () {
       if (this.data != undefined) {
         if (this.live) {
           let url = this.data.thumbnail_image_url;
@@ -100,12 +101,12 @@ export default {
           );
         } else {
           let url = this.data.image_urls.medium;
-          return url.replace("i.pximg.net", "i.pixiv.cat");
+          return this.$store.getters.getProxyUrl(url)
         }
       }
       return "";
     },
-    getuserurl() {
+    getuserurl () {
       if (this.data != undefined) {
         let url = "";
         if (this.live) {
@@ -113,7 +114,7 @@ export default {
         } else {
           url = this.data.user.profile_image_urls.medium;
         }
-        return url.replace("i.pximg.net", "i.pixiv.cat");
+        return this.$store.getters.getProxyUrl(url)
       }
       return "";
     },
@@ -122,7 +123,7 @@ export default {
     //   return ""
     // }
   },
-  mounted() {
+  mounted () {
     // this.getDomOffsetTop()
     //  console.log(this.$refs.image.offsetLeft,this.$refs.image.offsetTop);
     // this.setvis()
@@ -132,7 +133,7 @@ export default {
     }
   },
   methods: {
-    setvis() {
+    setvis () {
       if (!this.visual) {
         let newY = this.$store.state.rollingY[this.path];
         if (this.oldY != newY) {
@@ -149,7 +150,7 @@ export default {
         }
       }
     },
-    imgClick() {
+    imgClick () {
       // console.log("结果："+this.$parent.recordingOffsetX);
       if (this.$parent.recordingOffsetX == 0) {
         this.$router.push("/artworks/" + this.data.id);
@@ -240,32 +241,32 @@ export default {
   width: 24px !important;
   margin-right: 10px;
 }
-.collect_live{
-    position: absolute;
-    right: 0px;
-    width: 40px !important;
-    top: 10px;
-    height: 40px;
+.collect_live {
+  position: absolute;
+  right: 0px;
+  width: 40px !important;
+  top: 10px;
+  height: 40px;
 }
-.collect_live img{
+.collect_live img {
   width: 100%;
 }
-.collect  img {
+.collect img {
   width: 100%;
 }
-.round{
-    width: 70%;
-    height: 70%;
-    background-color: rgba(144, 133, 133, 0.81);
-    border-radius: 100%;
-    border-style: solid;
-    border-color: rgba(189, 184, 184, 0.54);
-    border-width: 2px;
+.round {
+  width: 70%;
+  height: 70%;
+  background-color: rgba(144, 133, 133, 0.81);
+  border-radius: 100%;
+  border-style: solid;
+  border-color: rgba(189, 184, 184, 0.54);
+  border-width: 2px;
 }
-.round img{
+.round img {
   width: 60%;
-    margin: auto;
-    display: block;
-    height: 100%;
+  margin: auto;
+  display: block;
+  height: 100%;
 }
 </style>

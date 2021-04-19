@@ -5,7 +5,7 @@
       <div class="wrap" v-for="(data, index) in comments" :key="index">
         <div>
           <div class="avatar">
-            <img :src="getPorxyurl(data.user.profile_image_urls.medium)" />
+            <img :src="$store.getters.getProxyUrl(data.user.profile_image_urls.medium)" />
           </div>
           <div class="content">
             <div class="name">{{ data.user.account }}</div>
@@ -16,9 +16,7 @@
         <!--<div v-if="data.has_replies">他人回复</div> -->
       </div>
     </div>
-  <div v-else class="noMessage">
-      没有留言
-  </div>
+    <div v-else class="noMessage">没有留言</div>
   </div>
 </template>
 <script>
@@ -28,27 +26,24 @@ export default {
   props: {
     id: Number,
   },
-  created() {
+  created () {
     Get_pixiv_api("comments", this.id).then((e) => {
       console.log(e);
       this.comments = e.comments;
-      if(e.comments.length!=0)this.flag=true
+      if (e.comments.length != 0) this.flag = true
     });
   },
-  data() {
+  data () {
     return {
       comments: null,
-      flag:false,
+      flag: false,
     };
   },
-  mounted() {},
-  computed:{
+  mounted () { },
+  computed: {
   },
   methods: {
-    getPorxyurl(url) {
-      return url.replace("i.pximg.net", "i.pixiv.cat");
-    },
-    getdate(date) {
+    getdate (date) {
       return date.replace("T", " ").split("+")[0];
     },
   },
@@ -89,7 +84,7 @@ export default {
 .wrap {
   margin: 20px 0;
 }
-.noMessage{
-    text-align: center;
+.noMessage {
+  text-align: center;
 }
 </style>

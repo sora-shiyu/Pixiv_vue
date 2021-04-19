@@ -13,7 +13,7 @@
       <div v-if="!isuser">
         <div style="text-align: center" v-if="tagsData">
           <div @click="clickTag(tagsData[0].tag)" class="zero">
-            <img :src="getProxyUrl(tagsData[0].illust.image_urls.medium)" alt />
+            <img :src="$store.getters.getProxyUrl(tagsData[0].illust.image_urls.medium)" alt />
             <div class="text">
               <div style="font-size: 24px">{{ "#" + tagsData[0].tag }}</div>
               <div style="font-size: 18px">{{ tagsData[0].translated_name }}</div>
@@ -26,7 +26,7 @@
               class="nozero"
               @click="clickTag(data.tag)"
             >
-              <img :src="getProxyUrl(data.illust.image_urls.medium)" alt />
+              <img :src="$store.getters.getProxyUrl(data.illust.image_urls.medium)" alt />
               <div class="text">
                 <div style="font-size: 14px">{{ "#" + data.tag }}</div>
                 <div style="font-size: 10px">{{ data.translated_name }}</div>
@@ -56,12 +56,14 @@
           </div>
           <div>
             <div>{{userdata.user.name}}</div>
-            <div>关注</div>
+            <div>
+              <el-button @click="onAttent" size="mini">关注</el-button>
+            </div>
           </div>
           <div>
             <img
               @click="gotoUser(userdata.user.id)"
-              :src="getProxyUrl(userdata.user.profile_image_urls.medium)"
+              :src="$store.getters.getProxyUrl(userdata.user.profile_image_urls.medium)"
             />
           </div>
         </div>
@@ -115,6 +117,16 @@ export default {
       this.tagsData = null
       this.loading = true
       if (this.Selected == "novel" || this.Selected == "illust") {
+        if (this.Selected == "novel") {
+          this.$message({
+            showClose: true,
+            message: '暂不支持预览novel',
+            duration: 1000,
+            offset: 50,
+            type: "warning"
+
+          })
+        }
         this.isuser = false
         Get_pixiv_api("tags", this.Selected).then((res) => {
           this.tagsData = res.trend_tags;
@@ -141,6 +153,16 @@ export default {
     }
   },
   methods: {
+    onAttent () {
+      this.$message({
+        showClose: true,
+        message: '暂不支持',
+        duration: 1000,
+        offset: 50,
+        type: "warning"
+
+      })
+    },
     gotoUser (id) {
       this.$router.push("/users/" + id);
     },
@@ -155,10 +177,7 @@ export default {
       this.$router.push("/searchResults");
 
     },
-    getProxyUrl (a) {
-      let url = a.replace("i.pximg.net", "i.pixiv.cat");
-      return url;
-    },
+
   },
   created () {
     // console.log(this.$store);
@@ -182,6 +201,7 @@ export default {
 .zero {
   width: 100%;
   height: 100vw;
+  max-height: 500px;
 }
 .zero img {
   width: 100%;
@@ -222,7 +242,7 @@ export default {
   height: 40px;
   line-height: 40px;
 }
-.user > div:nth-child(2) :first-child {
+.user > div:nth-child(2) > :first-child {
   float: left;
   padding-left: 80px;
 }

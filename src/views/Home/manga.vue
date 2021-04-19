@@ -1,5 +1,5 @@
 <template>
-  <div v-loading.fullscreen.lock="loading">
+  <div v-loading="loading">
     <navInfo pushSrc="/rank" text="排行榜">
       <template #img>
         <img src="@/assets/img/rank.svg" />
@@ -16,7 +16,7 @@
       </template>
     </navInfo>
   </div>
-    <waterfall type="recommended" mode="manga	" path="/home/manga" :waterfall="true" />
+  <waterfall type="recommended" mode="manga	" path="/home/manga" :waterfall="true" />
 </template>
 
 <script>
@@ -31,20 +31,20 @@ export default {
     horizontalPicture,
     waterfall,
   },
-  created() {
+  created () {
     Get_pixiv_api("recommended", "manga", 1, false).then((res) => {
       console.log(res);
       this.rankData = res.ranking_illusts;
-      this.loading=false
+      this.loading = false
     });
   },
-  data() {
+  data () {
     return {
       rankData: [],
-      loading:true
+      loading: true
     };
   },
-  mounted() {},
+  mounted () { },
   methods: {},
 };
 </script>

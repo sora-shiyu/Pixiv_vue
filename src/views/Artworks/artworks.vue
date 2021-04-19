@@ -5,10 +5,7 @@
     <div class="container" :style="{ width: domWidth + 'px' }">
       <div v-for="indedx in imgdata.page_count" :key="indedx">
         <!-- <el-image data-action="zoom" :src="getsrc_(indedx - 1)"></el-image> -->
-        <img
-          v-zoom="{ src: getOriginalSrc_(indedx - 1) }"
-          :src="getsrc_(indedx - 1)"
-        />
+        <img v-zoom="{ src: getOriginalSrc_(indedx - 1) }" :src="getsrc_(indedx - 1)" />
       </div>
     </div>
     <!-- 作者信息 -->
@@ -30,12 +27,8 @@
               <el-avatar :src="userimg" icon="el-icon-user-solid"></el-avatar>
             </div>
             <div style="line-height: 25px">
-              <div class="darkGray">
-                {{ imgdata.title }}
-              </div>
-              <div class="gray">
-                {{ name }}
-              </div>
+              <div class="darkGray">{{ imgdata.title }}</div>
+              <div class="gray">{{ name }}</div>
             </div>
           </div>
         </div>
@@ -65,12 +58,8 @@
               <el-avatar :src="userimg" icon="el-icon-user-solid"></el-avatar>
             </div>
             <div style="line-height: 25px">
-              <div class="darkGray">
-                {{ imgdata.title }}
-              </div>
-              <div class="gray">
-                {{ name }}
-              </div>
+              <div class="darkGray">{{ imgdata.title }}</div>
+              <div class="gray">{{ name }}</div>
             </div>
           </div>
         </div>
@@ -81,10 +70,8 @@
     <hr />
     <!-- 前3张图 -->
     <div class="lookProfile">
-      <img :src="userimg" alt="" />
-      <div class="name">
-        {{ name }}
-      </div>
+      <img :src="userimg" alt />
+      <div class="name">{{ name }}</div>
 
       <div class="button">
         <el-button>关注</el-button>
@@ -93,13 +80,13 @@
 
     <div class="otherImg">
       <div v-for="(img, otherindex) in otherImg" :key="otherindex">
-        <img :src="getPorxyurl(img.image_urls.medium)" alt="" />
+        <img :src="$store.getters.getProxyUrl(img.image_urls.medium)" alt />
       </div>
     </div>
     <div @click="click_user" class="outerLayer">
       <div class="package">
         <div style="float: left">查看个人简介</div>
-        <img style="float: left" src="@/assets/img/next.svg" alt="" />
+        <img style="float: left" src="@/assets/img/next.svg" alt />
       </div>
     </div>
     <hr style="margin-top: 0px" />
@@ -107,12 +94,7 @@
     <hr style="margin-top: 10px" />
     <div style="text-align: center">相关作品</div>
     <!-- 相关作品 -->
-    <waterfall
-      type="related"
-      :mode="id"
-      :path="'/artworks/' + id"
-      :waterfall="true"
-    />
+    <waterfall type="related" :mode="id" :path="'/artworks/' + id" :waterfall="true" />
   </div>
 </template>
 
@@ -139,17 +121,17 @@ export default {
   directives: {
     zoom: {
       // 指令的定义
-      mounted(el, binding) {
-        // console.log(el, binding);
+      beforeMount (el, binding) {
+        el.flag = false;
 
-        let flag = false;
-        let src = null;
-        if ("src" in binding.value) {
-          src = binding.value.src;
-        }
-        let oldsrc = el.src;
-        el.addEventListener("click", () => {
-          flag = !flag;
+
+        let zoomFun = function (el) {
+          let src = null;
+          if ("src" in binding.value) {
+            src = binding.value.src;
+          }
+          el.flag = !el.flag;
+          let flag = el.flag
           if (flag) {
             let clientHeight = document.body.clientHeight;
             let offsetY = 0;
@@ -160,7 +142,7 @@ export default {
               zoom = clientHeight / el.height;
             }
             offsetY = (clientHeight - el.height) / 2 - top;
-            if (src) {
+            if (src && el.src != src) {
               el.src = src;
             }
             el.style.position = "relative";
@@ -185,36 +167,33 @@ export default {
             div.style =
               "width: 100%;height: 100%;position: fixed;inset: 0px;opacity: 1;z-index: 998;background-color: rgb(255, 255, 255);transition: opacity 0.3s cubic-bezier(0.4, 0, 0, 1) 0s;";
             document.body.insertBefore(div, document.body.firstChild);
-
-            function isReize() {
-              let newtop = el.getBoundingClientRect().top;
-              if (top !== newtop) {
-                console.log(top, newtop);
-                // alert("滚动了");
+            var scrollFunc = function (e) {
+              e = e || window.event;
+              if (e.wheelDelta) {  //判断浏览器IE，谷歌滑轮事件               
                 el.click();
               }
             }
-            setTimeout(() => {
-              if (flag) {
-                top = el.getBoundingClientRect().top;
-                el.__vueSetInterval__ = setInterval(isReize, 100);
-              }
-            }, 450);
+            window.onmousewheel = document.onmousewheel = scrollFunc;
           } else {
-            clearInterval(el.__vueSetInterval__);
+            window.onmousewheel = document.onmousewheel = undefined
             document.getElementById("mask").style.display = "none";
             el.style.transform = "none";
-            el.src = oldsrc;
-            setTimeout(() => {
-              el.style = "";
-              document.getElementById("mask").remove();
-            }, 400);
+            el.style.position = "";
+            el.style.zIndex = ""
+            // el.src = el.oldsrc;
+            // el.style = "";
+            document.getElementById("mask").remove();
           }
-        });
+        }
+        el._zoomFun = zoomFun.bind(null, el);
+        el.addEventListener("click", el._zoomFun);
       },
+      beforeUnmount (el) {
+        el.removeEventListener("click", el._zoomFun)
+      }
     },
   },
-  data() {
+  data () {
     return {
       id: 0,
       imgdata: {},
@@ -228,8 +207,8 @@ export default {
     };
   },
   computed: {},
-  mounted() {},
-  created() {
+  mounted () { },
+  created () {
     // this.domWidth = window.screen.width;
     this.domWidth = this.$store.state.screenWidth;
     if (this._id == undefined) {
@@ -239,10 +218,7 @@ export default {
     Get_pixiv_api("illust", this.id, 0, false).then((res) => {
       this.imgdata = res.illust;
       this.name = res.illust.user.name;
-      this.userimg = this.imgdata.user.profile_image_urls.medium.replace(
-        "i.pximg.net",
-        "i.pixiv.cat"
-      );
+      this.userimg = this.$store.getters.getProxyUrl(this.imgdata.user.profile_image_urls.medium);
       Get_pixiv_api("member_illust", res.illust.user.id, 1, false).then(
         (res) => {
           this.loading = false;
@@ -252,36 +228,31 @@ export default {
     });
   },
   methods: {
-    getPorxyurl(url) {
-      return url.replace("i.pximg.net", "i.pixiv.cat");
-    },
-    getsrc_(index) {
+    getsrc_ (index) {
       let url_ =
         this.imgdata.page_count == 1
           ? this.imgdata.image_urls.large
           : this.imgdata.meta_pages[index].image_urls.large;
-      //   console.log(url_.replace("i.pximg.net", "i.pixiv.cat"));
-      return url_.replace("i.pximg.net", "i.pixiv.cat");
+      return this.$store.getters.getProxyUrl(url_)
     },
-    getOriginalSrc_(index) {
+    getOriginalSrc_ (index) {
       let url_ =
         this.imgdata.page_count == 1
           ? this.imgdata.meta_single_page.original_image_url
           : this.imgdata.meta_pages[index].image_urls.original;
-      //   console.log(url_.replace("i.pximg.net", "i.pixiv.cat"));
-      return url_.replace("i.pximg.net", "i.pixiv.cat");
+      return this.$store.getters.getProxyUrl(url_)
     },
-    click_user() {
+    click_user () {
       this.$router.push("/users/" + this.imgdata.user.id);
     },
-    open_() {
+    open_ () {
       let domdrawer = document.getElementById("drawer1").firstElementChild
         .firstElementChild;
       domdrawer.style.overflow = "auto";
       domdrawer.style.maxWidth = "500px";
       domdrawer.style.margin = "0 auto";
     },
-    scroll_(e) {
+    scroll_ (e) {
       this.affix = e.fixed;
     },
   },

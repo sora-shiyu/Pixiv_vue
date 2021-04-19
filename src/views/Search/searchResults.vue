@@ -28,7 +28,7 @@
           <div>
             <!-- {{userdata}} -->
             <div
-              @click="click(dataIllust.id)"
+              @click="gotoArtwAorks(dataIllust.id)"
               v-for="(dataIllust,indexIllusts) in userdata.illusts.length!=0?userdata.illusts:userdata.novels"
               :key="indexIllusts"
             >
@@ -186,6 +186,9 @@ export default {
     }, 1000),
     gotoUser (id) {
       this.$router.push("/users/" + id);
+    },
+    gotoArtwAorks (id) {
+      this.$router.push("/artworks/" + id);
     },
     ispPushClick (e) {
       this.Selected = e;

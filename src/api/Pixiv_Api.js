@@ -48,7 +48,7 @@ export function Get_pixiv_api (type, mode, page, no_page, date = "") {
             break;
         //推荐
         case "recommended":
-            url_ = "/Pixiv_api/recommended?mode=" + mode
+            url_ = "/Pixiv_api/recommended?mode=" + mode + page_
             break;
         //评论
         case "comments":

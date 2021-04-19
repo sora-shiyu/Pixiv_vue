@@ -26,27 +26,14 @@
         <img src="@/assets/img/collect_.svg" />
       </template>
     </navInfo>
-    <waterfall type="recommended" mode="illust	" path="/home/illust" :waterfall="true" />
-    <!-- <div
-      style="overflow: hidden"
-      v-infinite-scroll="load"
-      :infinite-scroll-immediate="false"
-    >
-      <div style="overflow: auto;" v-for="index in page" :key="index">
-        <waterfall
-          @offloading="offloading"
-          type="rank"
-          mode="day"
-          :page="index"
-        />
-      </div>
-    </div>
-    <div
-      style="height: 40px"
-      v-loading="loading"
-      element-loading-text="拼命加载中"
-      element-loading-spinner="el-icon-loading"
-    ></div>-->
+    <waterfall
+      v-if="illustData"
+      :imgData="illustData"
+      type="recommended"
+      mode="illust"
+      path="/home/illust"
+      :waterfall="true"
+    />
   </div>
 </template>
 
@@ -63,30 +50,31 @@ export default {
     horizontalPicture,
     waterfall,
   },
-  created () {
-    console.log(this.$store);
-    // console.log(liveJson[0]);
-    Get_pixiv_api("rank", "day", 1, false).then((res) => {
-      console.log(res);
-      this.rankData = res.illusts.slice(0, 9);
-      this.loading = false
-    });
-    Get_pixiv_api("live").then((res) => {
-      console.log(res);
-      this.liveData = res.lives;
-    });
-  },
   data () {
     return {
       rankData: [],
       liveData: [],
+      illustData: undefined,
       loading: true,
     };
+  },
+  created () {
+    //请求首页推荐插画数据
+    Get_pixiv_api("recommended", "illust", 1, false).then((res) => {
+      this.rankData = res.ranking_illusts;
+      this.illustData = res.illusts;
+      //关闭遮罩层
+      this.loading = false
+    });
+    //请求首页推荐直播数据
+    Get_pixiv_api("live").then((res) => {
+      this.liveData = res.lives;
+    });
   },
   mounted () { },
   methods: {},
 };
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 </style>

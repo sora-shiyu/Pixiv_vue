@@ -7,17 +7,23 @@
     <div style="position: relative">
       <div class="userData">
         <img class="userimg" :src="userUrl" alt />
-        <div class="userName">{{ userName }}</div>
-        <div v-if="userTwitter != null" style="display: inline-flex;" class="textColor">
+        <div class="userName">{{ userdata.user.name }}</div>
+        <div
+          v-if="userdata.profile.twitter_url != ''"
+          style="display: inline-flex;"
+          class="textColor"
+        >
           <img style="width: 20px" src="@/assets/img/twitter.svg" />
-          <div style="line-height: 28px;">{{ userTwitter }}</div>
+          <div style="line-height: 28px;">{{ userdata.profile.twitter_url }}</div>
         </div>
-        <div class="textColor">{{ userFollow + "关注 " + userMyPixiv + "好P友" }}</div>
+        <div
+          class="textColor"
+        >{{ userdata.profile.total_follow_users + "关注 " + userdata.profile.total_mypixiv_users + "好P友" }}</div>
       </div>
     </div>
 
     <div id="userComment" class="Comment">
-      <div ref="CommentText">{{ userComment }}</div>
+      <div ref="CommentText">{{ userdata.user.comment }}</div>
     </div>
     <div v-if="CB_" @click="clickCB" :style="{ display: cb_falg ? 'none' : '' }" class="Commentbut">
       <div>查看更多</div>
@@ -31,14 +37,15 @@
         <img src="@/assets/img/collect.svg" />
       </template>
       <template #text>
-        <span style="font-size: 15px">{{userIllusts}}件作品</span>
+        <span style="font-size: 15px">{{userdata.profile.total_illusts}}件作品</span>
       </template>
     </navInfo>
 
     <!-- 瀑布流图片 -->
 
     <waterfall
-      v-if="userid!=0"
+      v-if="userid!=0 "
+      :imgData="memberIllustData"
       type="member_illust"
       :mode="userid"
       :path="'/users/' + userid"
@@ -63,18 +70,23 @@ export default {
   },
   data () {
     return {
+      memberIllustData: undefined,
       cb_falg: false,
       userid: 0,
-      userdata: {},
-      userUrl: "",
-      userName: "",
-      userFollow: 0, //关注数量
-      userMyPixiv: 0, //好友数量
-      userComment: "",
-      userWebpage: "", //skeb链接
-      userTwitter: "", //Twitter链接
+      userdata: {
+        user: {
+          name: '',
+          comment: '',
+        },
+        profile: {
+          total_follow_users: '',//关注数量
+          total_mypixiv_users: '',//好友数量
+          webpage: '',//skeb链接
+          twitter_url: '',//Twitter链接
+          total_illusts: '',
+        }
+      },
       textH: 0,
-      userIllusts: 0,//插画数量
       favoriteData: null
 
     };
@@ -89,22 +101,17 @@ export default {
     },
   },
   created () {
-    console.log(this.$store.state.refresh);
     this.userid = this.$route.params.id;
+    if (this.$store.state.cacheUserIllustsData.length != 0) {
+      this.memberIllustData = this.$store.state.cacheUserIllustsData
+    }
+
     Get_pixiv_api("member", this.userid, 0, false).then((res) => {
       this.userdata = res;
       this.userUrl = this.$store.getters.getProxyUrl(res.user.profile_image_urls.medium)
-      this.userFollow = res.profile.total_follow_users;
-      this.userMyPixiv = res.profile.total_mypixiv_users;
-      this.userName = res.user.name;
-      this.userComment = res.user.comment;
-      this.userWebpage = res.profile.webpage;
-      this.userTwitter = res.profile.twitter_url;
-      this.userIllusts = res.profile.total_illusts
-      console.log(this.userdata);
       setTimeout(() => {
         this.textH = this.$refs.CommentText.offsetHeight;
-      }, 200);
+      }, 1);
     });
     Get_pixiv_api("favorite", this.userid).then((res) => {
       console.log(res);

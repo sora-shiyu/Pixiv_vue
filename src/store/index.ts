@@ -8,6 +8,8 @@ export default createStore({
     searchMode: undefined,
     SettingStatus: false,
     proxyUrl: '',
+    cacheArtworksData: {},
+    cacheUserIllustsData: [],
     proxyUrlData: [
       {
         value: 'i.pixiv.cat',
@@ -25,6 +27,12 @@ export default createStore({
   },
 
   mutations: {
+    setCacheUserIllustsData(state, n) {
+      state.cacheUserIllustsData = n
+    },
+    setCacheArtworksData(state, n) {
+      state.cacheArtworksData = n
+    },
     setProxyUrl(state, n) {
       state.proxyUrl = n
     },
@@ -50,6 +58,9 @@ export default createStore({
   getters: {
     getProxyUrl: (state) => (url: String) => {
       return url.replace('i.pximg.net', state.proxyUrl)
+    },
+    getWaterfallBoxWidth: (state) => {
+      return (state.screenWidth - 20) / 2
     },
   },
 })

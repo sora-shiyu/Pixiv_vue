@@ -38,6 +38,7 @@
 </template>
 
 <script>
+import { debounce2 } from "@/utils/tool";
 export default {
   name: "horizontalPictureBox",
   props: {
@@ -66,22 +67,10 @@ export default {
   watch: {
     f1: {
       handler: function () {
-        // console.log(a);
+        // console.log("变动");
         this.setvis();
-        // if (!this.visual) {
-        //   let newY = this.$store.state.rollingY[this.path];
-        //   if (this.oldY != newY) {
-        //     let clientHeight = document.documentElement.clientHeight;
-        //     // console.log(clientHeight);
-        //     if (clientHeight > this.$refs.image.offsetTop - newY) {
-        //       console.log("可见");
-        //       this.visual = true;
-        //     }
-        //     // console.log(this.$refs.image.offsetTop)
-        //     // console.log(newY);
-        //     this.oldY = newY;
-        //   }
-        // }
+
+
       },
       deep: true,
     },
@@ -135,6 +124,7 @@ export default {
   methods: {
     setvis () {
       if (!this.visual) {
+        console.log("计算");
         let newY = this.$store.state.rollingY[this.path];
         if (this.oldY != newY) {
           let clientHeight = document.documentElement.clientHeight;
@@ -152,6 +142,7 @@ export default {
     },
     imgClick () {
       // console.log("结果："+this.$parent.recordingOffsetX);
+      console.log("触发");
       if (this.$parent.recordingOffsetX == 0) {
         this.$router.push("/artworks/" + this.data.id);
       }

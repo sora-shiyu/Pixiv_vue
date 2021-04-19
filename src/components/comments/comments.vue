@@ -12,7 +12,7 @@
             <div class="commentContent">{{ data.comment }}</div>
           </div>
         </div>
-        <div class="date">{{ data.date }}</div>
+        <div class="date">{{getdate( data.date) }}</div>
         <!--<div v-if="data.has_replies">他人回复</div> -->
       </div>
     </div>
@@ -24,7 +24,7 @@ import { Get_pixiv_api } from "@/api/Pixiv_Api";
 export default {
   name: "comments",
   props: {
-    id: Number,
+    id: String,
   },
   created () {
     Get_pixiv_api("comments", this.id).then((e) => {

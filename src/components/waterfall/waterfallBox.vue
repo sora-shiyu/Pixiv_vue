@@ -1,6 +1,12 @@
 <template>
-  <div @click="click" class="Box" :style="{ width: BoxWidth + 'px', height: BoxWidth + 'px' }">
-    <horizontalPictureBox :path="path" :info="false" :width="BoxWidth + 'px'" :height="BoxWidth + 'px'" :data="data" />
+  <div @click="click" class="Box" :style="{ width: getWidth + 'px', height: getWidth + 'px' }">
+    <horizontalPictureBox
+      :path="path"
+      :info="false"
+      :width="getWidth + 'px'"
+      :height="getWidth + 'px'"
+      :data="data"
+    />
   </div>
 </template>
 
@@ -10,27 +16,27 @@ export default {
   name: "waterfallBox",
   props: {
     data: Object,
-    path:String,
+    path: String,
   },
-  components:{
-      horizontalPictureBox
+  components: {
+    horizontalPictureBox
   },
-  data() {
-    return {
-      BoxWidth: 0,
-    };
+  data () {
+    return {};
   },
-  mounted() {},
+  mounted () { },
   computed: {
-
+    getWidth () {
+      //返回图片宽高
+      return this.$store.getters.getWaterfallBoxWidth
+    }
   },
-  created() {
-    // console.log(this.data);
-    this.BoxWidth = (this.$store.state.screenWidth - 20) / 2;
-    // console.log(this.screenWidth);
+  created () {
   },
   methods: {
-    click(){
+    click () {
+      //缓存后再跳转减少请求
+      this.$store.commit('setCacheArtworksData', this.data);
       this.$router.push("/artworks/" + this.data.id);
     }
   },

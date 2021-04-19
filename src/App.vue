@@ -27,32 +27,6 @@
 import Setting from "./components/setting/setting";
 export default {
   name: "App",
-  watch: {
-    bodyWidth: {
-      handler: function (newValues, prevValues) {
-        this.$store.commit("setScreenWidth", newValues);
-      },
-    },
-
-  },
-  computed: {
-    getDrawersize () {
-      return this.bodyWidth * 0.66 + 'px'
-    }
-  },
-  created () {
-    this.bodyWidth = document.body.clientWidth
-    let ProxyUrl = this.getCookie("ProxyUrl")
-    console.log(this.$store.state.proxyUrlData);
-    if (typeof (ProxyUrl) == 'undefined') {
-      this.$store.commit("setProxyUrl", this.$store.state.proxyUrlData[0].value);
-    } else {
-      this.$store.commit("setProxyUrl", ProxyUrl);
-    }
-
-
-
-  },
   components: {
     Setting
   },
@@ -62,25 +36,50 @@ export default {
       AppLeft: 0,
     };
   },
+  watch: {
+    //监听页面宽度变化
+    bodyWidth: {
+      handler: function (newValues) {
+        this.$store.commit("setScreenWidth", newValues);
+      },
+    },
+  },
+  computed: {
+    //取设置页宽度
+    getDrawersize () {
+      return this.bodyWidth * 0.66 + 'px'
+    }
+  },
+  created () {
+    //初始化宽度
+    this.bodyWidth = document.body.clientWidth
+    //取图片代理地址
+    let ProxyUrl = this.getCookie("ProxyUrl")
+    //设置默认图片代理地址
+    if (typeof (ProxyUrl) == 'undefined') {
+      this.$store.commit("setProxyUrl", this.$store.state.proxyUrlData[0].value);
+    } else {
+      this.$store.commit("setProxyUrl", ProxyUrl);
+    }
+  },
+
   mounted () {
+    //取主页面离浏览器左边距离 ，设置页偏移默认贴左
     this.AppLeft = this.$refs.App.getBoundingClientRect().left
-    // window.addEventListener('resize', () => {
-    //   this.bodyWidth = document.body.clientWidth
-    //   this.AppLeft = this.$refs.App.getBoundingClientRect().left
-    // }, false)
+    //浏览器窗口变动监听
     window.onresize = () => {
       this.bodyWidth = document.body.clientWidth
       this.AppLeft = this.$refs.App.getBoundingClientRect().left
     }
   },
   methods: {
+    //关闭设置页
     drawerClose () {
       this.$store.commit("setSettingStatus", false);
     },
+    //打开设置页  设置偏移量
     open () {
-      console.log(this.$refs.settingDrawer.firstElementChild);
       this.$refs.settingDrawer.firstElementChild.style.marginLeft = this.AppLeft - 1 + 'px'
-
     },
     getCookie (cookie_name) {
       var allcookies = document.cookie;

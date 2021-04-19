@@ -2,8 +2,8 @@
   <div v-loading="loading">
     <topBack />
     <!-- 原图 -->
-    <div class="container" :style="{ width: domWidth + 'px' }">
-      <div v-for="indedx in imgdata.page_count" :key="indedx">
+    <div class="container">
+      <div v-for="indedx in imgData.page_count" :key="indedx">
         <!-- <el-image data-action="zoom" :src="getsrc_(indedx - 1)"></el-image> -->
         <img v-zoom="{ src: getOriginalSrc_(indedx - 1) }" :src="getsrc_(indedx - 1)" />
       </div>
@@ -24,18 +24,18 @@
           />
           <div>
             <div class="userImg" @click="click_user">
-              <el-avatar :src="userimg" icon="el-icon-user-solid"></el-avatar>
+              <el-avatar :src="userImg" icon="el-icon-user-solid"></el-avatar>
             </div>
             <div style="line-height: 25px">
-              <div class="darkGray">{{ imgdata.title }}</div>
-              <div class="gray">{{ name }}</div>
+              <div class="darkGray">{{ imgData.title }}</div>
+              <div class="gray">{{ imgData.user.name }}</div>
             </div>
           </div>
         </div>
       </el-affix>
     </div>
     <!-- 作者详情 -->
-    <userinfo :imgdata="imgdata" />
+    <userinfo :imgData="imgData" />
     <!-- 上拉容器 -->
     <div id="drawer1">
       <el-drawer
@@ -55,23 +55,23 @@
           />
           <div>
             <div class="userImg" @click="click_user">
-              <el-avatar :src="userimg" icon="el-icon-user-solid"></el-avatar>
+              <el-avatar :src="userImg" icon="el-icon-user-solid"></el-avatar>
             </div>
             <div style="line-height: 25px">
-              <div class="darkGray">{{ imgdata.title }}</div>
-              <div class="gray">{{ name }}</div>
+              <div class="darkGray">{{ imgData.title }}</div>
+              <div class="gray">{{ imgData.user.name }}</div>
             </div>
           </div>
         </div>
-        <userinfo :imgdata="imgdata" />
+        <userinfo :imgData="imgData" />
       </el-drawer>
     </div>
 
     <hr />
     <!-- 前3张图 -->
     <div class="lookProfile">
-      <img :src="userimg" alt />
-      <div class="name">{{ name }}</div>
+      <img :src="userImg" alt />
+      <div class="name">{{ imgData.user.name }}</div>
 
       <div class="button">
         <el-button>关注</el-button>
@@ -79,7 +79,7 @@
     </div>
 
     <div class="otherImg">
-      <div v-for="(img, otherindex) in otherImg" :key="otherindex">
+      <div v-for="(img, otherindex) in getThreeimage" :key="otherindex">
         <img :src="$store.getters.getProxyUrl(img.image_urls.medium)" alt />
       </div>
     </div>
@@ -115,17 +115,11 @@ export default {
     waterfall,
     comments,
   },
-  props: {
-    _id: String,
-  },
   directives: {
     zoom: {
-      // 指令的定义
       beforeMount (el, binding) {
         el.flag = false;
-
-
-        let zoomFun = function (el) {
+        el._zoomFunc = function () {
           let src = null;
           if ("src" in binding.value) {
             src = binding.value.src;
@@ -157,7 +151,6 @@ export default {
               ", " +
               zoom +
               ")";
-
             let div = document.createElement("div");
             div.className = "mask";
             div.id = "mask";
@@ -180,72 +173,91 @@ export default {
             el.style.transform = "none";
             el.style.position = "";
             el.style.zIndex = ""
-            // el.src = el.oldsrc;
-            // el.style = "";
             document.getElementById("mask").remove();
           }
         }
-        el._zoomFun = zoomFun.bind(null, el);
-        el.addEventListener("click", el._zoomFun);
+        el.addEventListener("click", el._zoomFunc);
       },
       beforeUnmount (el) {
-        el.removeEventListener("click", el._zoomFun)
+        el.removeEventListener("click", el._zoomFunc)
       }
     },
   },
   data () {
     return {
-      id: 0,
-      imgdata: {},
+      id: "0",
+      imgData: {
+        user: {
+          name: ''
+        }
+      },
       affix: false,
       drawer: false,
-      userimg: "",
-      domWidth: 0,
-      name: "",
+      userImg: "",
       otherImg: [],
       loading: true,
     };
   },
-  computed: {},
+  computed: {
+    getThreeimage () {
+      return this.otherImg.slice(0, 3);
+    }
+  },
   mounted () { },
   created () {
-    // this.domWidth = window.screen.width;
-    this.domWidth = this.$store.state.screenWidth;
-    if (this._id == undefined) {
-      let path = this.$route.path;
-      this.id = path.substring(path.lastIndexOf("/") + 1);
-    }
-    Get_pixiv_api("illust", this.id, 0, false).then((res) => {
-      this.imgdata = res.illust;
-      this.name = res.illust.user.name;
-      this.userimg = this.$store.getters.getProxyUrl(this.imgdata.user.profile_image_urls.medium);
-      Get_pixiv_api("member_illust", res.illust.user.id, 1, false).then(
+    this.id = this.$route.params.id;
+    //判断缓存画作id是否匹配 匹配引用缓存数据 否则重新请求数据
+    if (this.$store.state.cacheArtworksData.id == this.id) {
+      this.imgData = this.$store.state.cacheArtworksData;
+      this.userImg = this.$store.getters.getProxyUrl(this.imgData.user.profile_image_urls.medium);
+      this.loading = false;
+      Get_pixiv_api("member_illust", this.imgData.user.id, 1, false).then(
         (res) => {
-          this.loading = false;
-          this.otherImg = res.illusts.slice(0, 3);
+          this.otherImg = res.illusts
         }
       );
-    });
+    } else {
+      Get_pixiv_api("illust", this.id, 0, true).then((res) => {
+        this.imgData = res.illust;
+        this.userImg = this.$store.getters.getProxyUrl(this.imgData.user.profile_image_urls.medium);
+        this.loading = false;
+        Get_pixiv_api("member_illust", res.illust.user.id, 1, false).then(
+          (res) => {
+            this.otherImg = res.illusts
+          }
+        );
+      });
+
+
+    }
+
+
   },
   methods: {
+    //取缩略图
     getsrc_ (index) {
       let url_ =
-        this.imgdata.page_count == 1
-          ? this.imgdata.image_urls.large
-          : this.imgdata.meta_pages[index].image_urls.large;
+        this.imgData.page_count == 1
+          ? this.imgData.image_urls.large
+          : this.imgData.meta_pages[index].image_urls.large;
       return this.$store.getters.getProxyUrl(url_)
     },
+    //取原图
     getOriginalSrc_ (index) {
       let url_ =
-        this.imgdata.page_count == 1
-          ? this.imgdata.meta_single_page.original_image_url
-          : this.imgdata.meta_pages[index].image_urls.original;
+        this.imgData.page_count == 1
+          ? this.imgData.meta_single_page.original_image_url
+          : this.imgData.meta_pages[index].image_urls.original;
       return this.$store.getters.getProxyUrl(url_)
     },
+    //跳转作者详情页
     click_user () {
-      this.$router.push("/users/" + this.imgdata.user.id);
+      //缓存后再跳转减少请求
+      this.$store.commit('setCacheUserIllustsData', this.otherImg);
+      this.$router.push("/users/" + this.imgData.user.id);
     },
     open_ () {
+      //打开伸缩页 样式对齐body
       let domdrawer = document.getElementById("drawer1").firstElementChild
         .firstElementChild;
       domdrawer.style.overflow = "auto";
@@ -253,6 +265,7 @@ export default {
       domdrawer.style.margin = "0 auto";
     },
     scroll_ (e) {
+      //判断固钉状态来设置样式
       this.affix = e.fixed;
     },
   },
@@ -260,9 +273,9 @@ export default {
 </script>
 
 <style scoped>
+.container,
 .container * {
   width: 100%;
-  /* margin: 10px 0; */
 }
 .userAffix {
   height: 50px;

@@ -36,7 +36,7 @@ export default {
       Datas: [],
       page: 1,
       //底部loading
-      loading: false,
+      loading: true,
       //整体遮罩
       loadingFirst: true,
     };
@@ -47,7 +47,7 @@ export default {
   },
   created () {
     //判断是否已经存在数据
-    console.log(this.imgData);
+    // console.log(this.imgData);
     if (this.imgData && this.imgData != []) {
       this.Datas = this.imgData
       this.loadingFirst = false;
@@ -86,6 +86,7 @@ export default {
         this.page++;
         Get_pixiv_api(this.type, this.mode, this.page, false).then(
           (res) => {
+            console.log("触发下拉请求", this.type, this.mode, this.page);
             res.illusts.forEach((element) => {
               this.Datas.push(element);
             });

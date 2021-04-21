@@ -23,7 +23,7 @@
             src="@/assets/img/top.svg"
           />
           <div>
-            <div class="userImg" @click="click_user">
+            <div class="userImg" @click="clickUser">
               <el-avatar :src="userImg" icon="el-icon-user-solid"></el-avatar>
             </div>
             <div style="line-height: 25px">
@@ -54,7 +54,7 @@
             src="@/assets/img/down.svg"
           />
           <div>
-            <div class="userImg" @click="click_user">
+            <div class="userImg" @click="clickUser">
               <el-avatar :src="userImg" icon="el-icon-user-solid"></el-avatar>
             </div>
             <div style="line-height: 25px">
@@ -70,23 +70,23 @@
     <hr />
     <!-- 前3张图 -->
     <div class="lookProfile">
-      <img :src="userImg" alt />
+      <img @click="gotouser" :src="userImg" alt />
       <div class="name">{{ imgData.user.name }}</div>
 
       <div class="button">
-        <el-button>关注</el-button>
+        <el-button size="small">关注</el-button>
       </div>
     </div>
 
     <div class="otherImg">
-      <div v-for="(img, otherindex) in getThreeimage" :key="otherindex">
+      <div @click="clickOtherImg(img)" v-for="(img, otherindex) in getThreeimage" :key="otherindex">
         <img :src="$store.getters.getProxyUrl(img.image_urls.medium)" alt />
       </div>
     </div>
-    <div @click="click_user" class="outerLayer">
+    <div @click="clickUser" class="outerLayer">
       <div class="package">
-        <div style="float: left">查看个人简介</div>
-        <img style="float: left" src="@/assets/img/next.svg" alt />
+        <div>查看个人简介</div>
+        <img src="@/assets/img/next.svg" alt />
       </div>
     </div>
     <hr style="margin-top: 0px" />
@@ -118,27 +118,40 @@ export default {
   directives: {
     zoom: {
       beforeMount (el, binding) {
+        //初始化图片状态
         el.flag = false;
+        //定义函数
+        console.log(el._zoomFunc);
         el._zoomFunc = function () {
+          //判断是否传图片src进来
           let src = null;
           if ("src" in binding.value) {
             src = binding.value.src;
           }
+          //状态取反
           el.flag = !el.flag;
           let flag = el.flag
           if (flag) {
+            //如果点击后处于true 添加动画效果
+            //取body可见高
             let clientHeight = document.body.clientHeight;
+            //初始偏移高度
             let offsetY = 0;
+            //初始缩放比例
             let zoom = 1;
+            //取图片距离顶部位置
             let top = el.getBoundingClientRect().top;
-
+            //判断图片高度是否大于可见高 缩小图片比例图片完整显示于页面上
             if (el.height > clientHeight) {
               zoom = clientHeight / el.height;
             }
+            //使图片位于屏幕中间
             offsetY = (clientHeight - el.height) / 2 - top;
+            //替换图片参数
             if (src && el.src != src) {
               el.src = src;
             }
+            //设置动画效果
             el.style.position = "relative";
             el.style.zIndex = "999";
             el.style.transition =
@@ -151,6 +164,7 @@ export default {
               ", " +
               zoom +
               ")";
+            //在body下添加遮罩div
             let div = document.createElement("div");
             div.className = "mask";
             div.id = "mask";
@@ -160,15 +174,23 @@ export default {
             div.style =
               "width: 100%;height: 100%;position: fixed;inset: 0px;opacity: 1;z-index: 998;background-color: rgb(255, 255, 255);transition: opacity 0.3s cubic-bezier(0.4, 0, 0, 1) 0s;";
             document.body.insertBefore(div, document.body.firstChild);
+            //定义鼠标滚轮事件 滚动滚轮触发点击事件 关闭图片显示
             var scrollFunc = function (e) {
               e = e || window.event;
               if (e.wheelDelta) {  //判断浏览器IE，谷歌滑轮事件               
                 el.click();
               }
             }
+            //绑定滚轮事件
+            window.onscroll = function () {
+              el.click();
+            }
+
             window.onmousewheel = document.onmousewheel = scrollFunc;
+
           } else {
-            window.onmousewheel = document.onmousewheel = undefined
+            //状态为false 移除滚轮绑定事件,div遮罩层,动画效果
+            window.onscroll = window.onmousewheel = document.onmousewheel = undefined
             document.getElementById("mask").style.display = "none";
             el.style.transform = "none";
             el.style.position = "";
@@ -179,6 +201,7 @@ export default {
         el.addEventListener("click", el._zoomFunc);
       },
       beforeUnmount (el) {
+        //清除点击事件
         el.removeEventListener("click", el._zoomFunc)
       }
     },
@@ -200,34 +223,61 @@ export default {
   },
   computed: {
     getThreeimage () {
-      return this.otherImg.slice(0, 3);
+      //取作者画作前三
+      if (!this.otherImg) this.otherImg = []
+      let arr = this.otherImg.slice(0, 3);
+
+      return arr
     }
   },
   mounted () { },
   created () {
     this.id = this.$route.params.id;
     //判断缓存画作id是否匹配 匹配引用缓存数据 否则重新请求数据
+    let Prom_illust = undefined
     if (this.$store.state.cacheArtworksData.id == this.id) {
       this.imgData = this.$store.state.cacheArtworksData;
       this.userImg = this.$store.getters.getProxyUrl(this.imgData.user.profile_image_urls.medium);
       this.loading = false;
-      Get_pixiv_api("member_illust", this.imgData.user.id, 1, false).then(
-        (res) => {
-          this.otherImg = res.illusts
-        }
-      );
     } else {
-      Get_pixiv_api("illust", this.id, 0, true).then((res) => {
+      Prom_illust = Get_pixiv_api("illust", this.id, 0, true).then((res) => {
         this.imgData = res.illust;
         this.userImg = this.$store.getters.getProxyUrl(this.imgData.user.profile_image_urls.medium);
         this.loading = false;
-        Get_pixiv_api("member_illust", res.illust.user.id, 1, false).then(
+      })
+    }
+
+    //判断缓存画师画作user.id是否匹配 匹配引用缓存数据 否则重新请求数据
+    if (this.$store.state.cacheUserIllustsData.id == this.imgData.user.id) {
+      console.log("引用缓存");
+      this.otherImg = this.$store.state.cacheUserIllustsData.data
+    } else {
+      //判断是否需要等待上个请求
+      if (Prom_illust) {
+        Promise.all([Prom_illust]).then(() => {
+          Get_pixiv_api("member_illust", this.imgData.user.id, 1, false).then(
+            (res) => {
+              this.otherImg = res.illusts
+              //缓存数据 当跳转至作者详情页或作者其他画作时减少请求
+              this.$store.commit('setCacheUserIllustsData', {
+                id: this.imgData.user.id,
+                data: res.illusts
+              });
+            }
+          );
+        })
+      } else {
+        Get_pixiv_api("member_illust", this.imgData.user.id, 1, false).then(
           (res) => {
             this.otherImg = res.illusts
+            //缓存数据 当跳转至作者详情页或作者其他画作时减少请求
+            this.$store.commit('setCacheUserIllustsData', {
+              id: this.imgData.user.id,
+              data: res.illusts
+            });
           }
         );
-      });
-
+      }
 
     }
 
@@ -251,10 +301,14 @@ export default {
       return this.$store.getters.getProxyUrl(url_)
     },
     //跳转作者详情页
-    click_user () {
+    clickUser () {
       //缓存后再跳转减少请求
-      this.$store.commit('setCacheUserIllustsData', this.otherImg);
       this.$router.push("/users/" + this.imgData.user.id);
+    },
+    clickOtherImg (data) {
+      this.$store.commit('setCacheArtworksData', data);
+      this.$router.push("/artworks/" + data.id);
+
     },
     open_ () {
       //打开伸缩页 样式对齐body
@@ -268,6 +322,7 @@ export default {
       //判断固钉状态来设置样式
       this.affix = e.fixed;
     },
+
   },
 };
 </script>
@@ -300,6 +355,7 @@ export default {
   width: 100%;
   height: 60px;
 }
+
 .lookProfile img {
   margin-left: 10px;
   height: 50px;

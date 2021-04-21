@@ -2,17 +2,13 @@
   <div>
     <topback />
     <div class="topImage">
-      <img :src="userUrl" alt />
+      <img :src="userUrl?userUrl:defaultPicture" alt />
     </div>
     <div style="position: relative">
       <div class="userData">
-        <img class="userimg" :src="userUrl" alt />
+        <img class="userimg" :src="userUrl?userUrl:defaultPicture" alt />
         <div class="userName">{{ userdata.user.name }}</div>
-        <div
-          v-if="userdata.profile.twitter_url != ''"
-          style="display: inline-flex;"
-          class="textColor"
-        >
+        <div v-if="userdata.profile.twitter_url" style="display: inline-flex;" class="textColor">
           <img style="width: 20px" src="@/assets/img/twitter.svg" />
           <div style="line-height: 28px;">{{ userdata.profile.twitter_url }}</div>
         </div>
@@ -87,7 +83,9 @@ export default {
         }
       },
       textH: 0,
-      favoriteData: null
+      favoriteData: null,
+      userUrl: '',
+      defaultPicture: require('@/assets/img/blank.svg')
 
     };
   },
@@ -102,8 +100,8 @@ export default {
   },
   created () {
     this.userid = this.$route.params.id;
-    if (this.$store.state.cacheUserIllustsData.length != 0) {
-      this.memberIllustData = this.$store.state.cacheUserIllustsData
+    if (this.$store.state.cacheUserIllustsData.id == this.userid) {
+      this.memberIllustData = this.$store.state.cacheUserIllustsData.data
     }
 
     Get_pixiv_api("member", this.userid, 0, false).then((res) => {
@@ -174,7 +172,7 @@ export default {
   width: 100px;
   border-radius: 50%;
   height: 100px;
-  /* object-fit: none; */
+  object-fit: cover;
 }
 .userName {
   font-size: 18px;

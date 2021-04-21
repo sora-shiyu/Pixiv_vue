@@ -37,6 +37,8 @@ export default {
   },
   methods: {
     click_tag (e) {
+      //设置搜索模式 搜索关键词
+      this.$store.commit('setSearchMode', "illust");
       this.$store.commit('setSearchText', e);
       this.$router.push("/searchResults");
     },
@@ -49,11 +51,6 @@ export default {
         "-" +
         date.getDate() +
         " ";
-      // date.getHours() +
-      // ":" +
-      // date.getMinutes() +
-      // ":" +
-      // date.getSeconds();
       return Str;
     },
 

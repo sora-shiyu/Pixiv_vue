@@ -1,17 +1,15 @@
 <template>
   <div ref="image" :style="{ height: height, width: width }" class="container">
     <div class="bigimg" @click="imgClick">
-      <img v-if="!visual" src="@/assets/img/..svg" alt />
-      <img v-else :src="geturl" alt />
+      <img :src="visual?getUrl:defaultPicture" />
     </div>
+    <div @click="imgClick" v-if="info" class="info">
+      <div class="title">{{live?data.name:data.title}}</div>
 
-    <div v-if="info" class="info">
-      <div v-if="live" class="title">{{ data.name }}</div>
-      <div v-else class="title">{{ data.title }}</div>
       <div class="userName">
-        <div @click="imgClick">
+        <div>
           <div>
-            <img :src="getuserurl" alt />
+            <img :src="getUserUrl" alt />
           </div>
           <div
             v-if="live"
@@ -38,7 +36,6 @@
 </template>
 
 <script>
-import { debounce2 } from "@/utils/tool";
 export default {
   name: "horizontalPictureBox",
   props: {
@@ -62,40 +59,41 @@ export default {
       DomOffsetTop: 0,
       oldY: 0,
       visual: false,
+      defaultPicture: require('@/assets/img/blank.svg')
     };
   },
   watch: {
     f1: {
       handler: function () {
-        // console.log("变动");
+        //触发计算图片是否处于可见范围内
         this.setvis();
-
-
       },
       deep: true,
     },
   },
   computed: {
     f1 () {
-      // console.log(this.$store.state.rollingY[this.path]);
+      //返回当前页滚动条距离
       return this.$store.state.rollingY[this.path];
     },
-    geturl () {
+    getUrl () {
       if (this.data != undefined) {
         if (this.live) {
+          //替换直播图片反代站点
           let url = this.data.thumbnail_image_url;
           return url.replace(
             "img-sketch.pximg.net",
             "img-sketch.shiyua.workers.dev"
           );
         } else {
-          let url = this.data.image_urls.medium;
+          let url = this.data.image_urls.square_medium;
           return this.$store.getters.getProxyUrl(url)
         }
       }
       return "";
     },
-    getuserurl () {
+    getUserUrl () {
+      //获取作者头像
       if (this.data != undefined) {
         let url = "";
         if (this.live) {
@@ -107,15 +105,9 @@ export default {
       }
       return "";
     },
-    // getDomOffsetTop(){
-    //   this.DomOffsetTop=this.$refs.image.offsetTop
-    //   return ""
-    // }
   },
   mounted () {
-    // this.getDomOffsetTop()
-    //  console.log(this.$refs.image.offsetLeft,this.$refs.image.offsetTop);
-    // this.setvis()
+    //初始化图片显示 判断图片是否处于可见范围内
     let clientHeight = document.documentElement.clientHeight;
     if (clientHeight > this.$refs.image.offsetTop) {
       this.visual = true;
@@ -123,31 +115,39 @@ export default {
   },
   methods: {
     setvis () {
+      //对已可见状态不处理
       if (!this.visual) {
-        console.log("计算");
         let newY = this.$store.state.rollingY[this.path];
+        //判断滚动条距离是否变化
         if (this.oldY != newY) {
+          //判断是否处于可见
           let clientHeight = document.documentElement.clientHeight;
-          // console.log(clientHeight);
           if (clientHeight > this.$refs.image.offsetTop - newY) {
-            // console.log("可见");
-            // this.$refs.image.setAttribute("src",)
             this.visual = true;
           }
-          // console.log(this.$refs.image.offsetTop)
-          // console.log(newY);
+          //更新距离
           this.oldY = newY;
         }
       }
     },
     imgClick () {
-      // console.log("结果："+this.$parent.recordingOffsetX);
-      console.log("触发");
+      // 取父组件鼠标移动值 防止误触
       if (this.$parent.recordingOffsetX == 0) {
-        this.$router.push("/artworks/" + this.data.id);
+        if (this.live) {
+          this.$message({
+            showClose: true,
+            message: '暂不支持live功能',
+            duration: 1000,
+            offset: 50,
+            type: "warning"
+
+          })
+        } else {
+          //缓存数据
+          this.$store.commit('setCacheArtworksData', this.data);
+          this.$router.push("/artworks/" + this.data.id);
+        }
       }
-      // this.$router.push("/artworks/" + this.data.id);
-      // alert(this.data.id)
     },
   },
 };

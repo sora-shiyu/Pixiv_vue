@@ -28,7 +28,7 @@ export default {
   },
   created () {
     Get_pixiv_api("comments", this.id).then((e) => {
-      console.log(e);
+      // console.log(e);
       this.comments = e.comments;
       if (e.comments.length != 0) this.flag = true
     });

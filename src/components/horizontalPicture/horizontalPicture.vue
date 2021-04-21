@@ -20,7 +20,7 @@ import horizontalPictureBox from "@/components/horizontalPicture/horizontalPictu
 export default {
   name: "horizontalPicture",
   props: {
-    live:Boolean,
+    live: Boolean,
     width: String,
     height: String,
     imgDatas: Object,
@@ -29,62 +29,50 @@ export default {
     horizontalPictureBox,
   },
   computed: {
-    getwidth() {
-      //   if(imgDatas=undefined)return "0px"
+    getwidth () {
+      //返回组件总宽度
       return this.imgDatas.length * (200 + 10) + "px";
     },
   },
-  data() {
+  data () {
     return {
       isDown: false,
       initX: 0,
       recordingOffsetX: 0,
     };
   },
-  mounted() {
-    // console.log(this.imgDatas);
-    // window.addEventListener("scroll", this.windowScroll);
+  mounted () {
   },
   methods: {
-    // windowScroll() {
-    //   // 滚动条距离页面顶部的距离
-    //   // 以下写法原生兼容
-    //   let scrollTop =
-    //     window.pageYOffset ||
-    //     document.documentElement.scrollTop ||
-    //     document.body.scrollTop;
-    //   console.log(scrollTop);
-    // },
-    mousedown(e) {
+    mousedown (e) {
+      //鼠标按下 初始化偏移值
       this.isDown = true;
       this.initX = e.screenX;
       this.recordingOffsetX = 0;
     },
-    mouseup() {
-      this.isDown = false;
-      this.initX = 0;
-      // console.log("松开");
-    },
-    mouseleave() {
+    mouseup () {
+      //鼠标抬起 结束滑动
       this.isDown = false;
       this.initX = 0;
     },
-    mousemove(e) {
+    mouseleave () {
+      //鼠标离开 结束滑动
+      this.mouseup()
+    },
+    mousemove (e) {
+      //鼠标按下时移动
       if (this.isDown) {
         let offsetX;
+        //鼠标移动的偏移值
         offsetX = e.screenX - this.initX;
+        //记录偏移值
         this.recordingOffsetX = offsetX;
-        // console.log("偏移量："+offsetX);
         this.initX = e.screenX;
+        //组件滚动条跟随移动
         this.$refs.Picture.scrollLeft -= offsetX;
-        // console.log(offsetX);
-        // console.log(e);
       }
     },
   },
-  // beforeDestroy() {
-  //   window.removeEventListener("scroll", this.windowScroll);
-  // },
 };
 </script>
 

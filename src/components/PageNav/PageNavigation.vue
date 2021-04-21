@@ -44,9 +44,7 @@ export default {
     };
   },
   mounted () {
-    // if(choose)
     this.flag = this.choose ? this.choose : this.datas[0].path;
-
   },
   created () {
 

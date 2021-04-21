@@ -9,7 +9,10 @@ export default createStore({
     SettingStatus: false,
     proxyUrl: '',
     cacheArtworksData: {},
-    cacheUserIllustsData: [],
+    cacheUserIllustsData: {
+      id:0,
+      data:[]
+    },
     proxyUrlData: [
       {
         value: 'i.pixiv.cat',
@@ -22,6 +25,10 @@ export default createStore({
       {
         value: 'api.pixiv.moe/image/i.pximg.net',
         label: 'pixiv.moe',
+      },
+      {
+        value: 'http://i.shiyua.ltd:2020/',
+        label: 'i.shiyua.ltd',
       },
     ],
   },
@@ -57,7 +64,11 @@ export default createStore({
   modules: {},
   getters: {
     getProxyUrl: (state) => (url: String) => {
-      return url.replace('i.pximg.net', state.proxyUrl)
+      if (state.proxyUrl.indexOf('http://') != -1) {
+        return url.replace('https://i.pximg.net', state.proxyUrl)
+      } else {
+        return url.replace('i.pximg.net', state.proxyUrl)
+      }
     },
     getWaterfallBoxWidth: (state) => {
       return (state.screenWidth - 20) / 2

@@ -13,24 +13,22 @@
       <div v-if="!isuser">
         <div style="text-align: center" v-if="tagsData">
           <div @click="clickTag(tagsData[0].tag)" class="zero">
-            <img :src="$store.getters.getProxyUrl(tagsData[0].illust.image_urls.medium)" alt />
+            <img :src="$store.getters.getProxyUrl(tagsData[0].illust.image_urls.medium)" />
             <div class="text">
               <div style="font-size: 24px">{{ "#" + tagsData[0].tag }}</div>
               <div style="font-size: 18px">{{ tagsData[0].translated_name }}</div>
             </div>
           </div>
-          <div style="overflow: auto">
-            <div
-              v-for="(data, index) in tagsData.slice(1, tagsData.length)"
-              :key="index"
-              class="nozero"
-              @click="clickTag(data.tag)"
-            >
-              <img :src="$store.getters.getProxyUrl(data.illust.image_urls.medium)" alt />
-              <div class="text">
-                <div style="font-size: 14px">{{ "#" + data.tag }}</div>
-                <div style="font-size: 10px">{{ data.translated_name }}</div>
-              </div>
+          <div
+            v-for="(data, index) in tagsData.slice(1, tagsData.length)"
+            :key="index"
+            class="nozero"
+            @click="clickTag(data.tag)"
+          >
+            <el-image lazy :src="$store.getters.getProxyUrl(data.illust.image_urls.medium)" />
+            <div class="text">
+              <div style="font-size: 14px">{{ "#" + data.tag }}</div>
+              <div style="font-size: 10px">{{ data.translated_name }}</div>
             </div>
           </div>
         </div>
@@ -40,7 +38,7 @@
           <div>
             <!-- {{userdata}} -->
             <div
-              @click="click(dataIllust.id)"
+              @click="click(dataIllust)"
               v-for="(dataIllust,indexIllusts) in userdata.illusts"
               :key="indexIllusts"
             >
@@ -51,7 +49,6 @@
                 :height="getwidth"
                 :data="dataIllust"
               />
-              <!-- <img :src="getProxyUrl(dataIllust.image_urls.medium)"> -->
             </div>
           </div>
           <div>
@@ -134,7 +131,7 @@ export default {
         });
       } else {
         this.isuser = true
-        Get_pixiv_api("recommended", this.Selected).then((res) => {
+        Get_pixiv_api("recommended", this.Selected, 1, true).then((res) => {
           this.tagsData = res.user_previews;
           this.loading = false
         });
@@ -166,8 +163,9 @@ export default {
     gotoUser (id) {
       this.$router.push("/users/" + id);
     },
-    click (id) {
-      this.$router.push("/artworks/" + id);
+    click (data) {
+      this.$store.commit('setCacheArtworksData', data);
+      this.$router.push("/artworks/" + data.id);
     },
     ispPushClick (e) {
       this.Selected = e;
